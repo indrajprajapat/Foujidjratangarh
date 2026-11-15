@@ -2985,5 +2985,90 @@ playlist: (document.getElementById('remSongCategory') ? document.getElementById(
         };
     })();
 </script>
+    <script>
+    (function() {
+        var adminNav = document.querySelector('#adminDashboardModal .admin-nav');
+        var adminContent = document.querySelector('#adminDashboardModal .modal-content');
+        var footerEl = document.querySelector('footer.contact-section');
+
+        // 1. Admin Dashboard mein "Our Partners" Button aur Tab jodein
+        if (adminNav && adminContent && !document.getElementById('tabOurPartnersBox')) {
+            var opBtn = document.createElement('button');
+            opBtn.type = 'button';
+            opBtn.innerHTML = '🏢 Our Partners';
+            opBtn.onclick = function() { switchAdminTab('tabOurPartnersBox', this); };
+            adminNav.appendChild(opBtn);
+
+            var opTab = document.createElement('div');
+            opTab.id = 'tabOurPartnersBox';
+            opTab.className = 'admin-tab-content';
+            opTab.innerHTML = '<h3 style="color:var(--neon-gold); margin-bottom:12px;">🏢 Our Partners (नीचे दिखने वाले कंपनी बॉक्स जोड़ें)</h3>' +
+                '<div class="upload-box" style="margin-top:0; margin-bottom:20px;">' +
+                '<div class="form-group"><label>कंपनी / ब्रांड का नाम (Company Name) *</label><input type="text" id="opNewCompName" class="form-control" placeholder="जैसे: Fouji Sound Ratangarh"></div>' +
+                '<div class="form-group"><label>संपर्क नंबर (Contact Number) *</label><input type="tel" id="opNewCompPhone" class="form-control" placeholder="जैसे: 7023370739"></div>' +
+                '<div class="form-group"><label>कंपनी का लोगो / फोटो चुनें (Logo Photo) *</label><input type="file" id="opNewCompLogo" class="form-control" accept="image/*"></div>' +
+                '<button type="button" class="btn btn-gold" style="width:100%; justify-content:center;" onclick="saveNewOurPartner()">+ Add Partner Card</button>' +
+                '</div><div id="adminOurPartnersGrid" class="partners-4-grid"></div>';
+            adminContent.appendChild(opTab);
+        }
+
+        // 2. Website ke sabse neeche "Our Partners" Section banayein
+        if (footerEl && !document.getElementById('bottomOurPartnersSec')) {
+            var opSec = document.createElement('section');
+            opSec.id = 'bottomOurPartnersSec';
+            opSec.className = 'container';
+            opSec.style.paddingTop = '10px';
+            opSec.style.display = 'none';
+            opSec.innerHTML = '<h2 class="sec-title"><i class="fas fa-award"></i> Our Partners</h2>' +
+                '<div class="partners-4-grid" id="publicOurPartnersGrid"></div>';
+            footerEl.parentNode.insertBefore(opSec, footerEl.nextSibling);
+        }
+
+        window.saveNewOurPartner = function() {
+            var cname = document.getElementById('opNewCompName').value.trim();
+            var cphone = document.getElementById('opNewCompPhone').value.trim();
+            var cfile = document.getElementById('opNewCompLogo').files.item(0);
+            if (!cname || !cphone || !cfile) return alert("कृपया कंपनी का नाम, नंबर और लोगो फोटो तीनों चुनें।");
+
+            compressAndSaveImage(cfile, 500, function(base64Url) {
+                db.ref('ourPartners').push({ name: cname, phone: cphone, logo: base64Url }).then(function() {
+                    document.getElementById('opNewCompName').value = "";
+                    document.getElementById('opNewCompPhone').value = "";
+                    document.getElementById('opNewCompLogo').value = "";
+                    alert("Partner कंपनी जुड़ गई है!");
+                }).catch(function(err) { alert("Error: " + err.message); });
+            });
+        };
+
+        db.ref('ourPartners').on('value', function(snap) {
+            var data = snap.val() || {};
+            var keys = Object.keys(data);
+            var sec = document.getElementById('bottomOurPartnersSec');
+            var pubGrid = document.getElementById('publicOurPartnersGrid');
+            var admGrid = document.getElementById('adminOurPartnersGrid');
+
+            if (sec) sec.style.display = keys.length ? 'block' : 'none';
+            if (pubGrid) pubGrid.innerHTML = "";
+            if (admGrid) admGrid.innerHTML = "";
+
+            keys.forEach(function(id) {
+                var item = data[id];
+                if (pubGrid) {
+                    pubGrid.innerHTML += '<div class="partner-card-equal">' +
+                        '<img src="' + item.logo + '" alt="' + item.name + '">' +
+                        '<div><h4 style="color:var(--neon-gold); margin-bottom:4px;">' + item.name + '</h4>' +
+                        '<p style="color:var(--neon-blue); font-weight:600; font-size:0.9rem;"><i class="fas fa-phone-alt"></i> ' + item.phone + '</p></div></div>';
+                }
+                if (admGrid) {
+                    admGrid.innerHTML += '<div class="partner-card-equal">' +
+                        '<img src="' + item.logo + '">' +
+                        '<div><h4 style="color:var(--neon-gold);">' + item.name + '</h4>' +
+                        '<p style="color:#00f3ff; font-size:0.85rem;">' + item.phone + '</p>' +
+                        '<button type="button" class="btn btn-pink" style="margin-top:8px; padding:4px 10px; font-size:0.75rem;" onclick="deleteItem(\'ourPartners\',\'' + id + '\')">Delete</button></div></div>';
+                }
+            });
+        });
+    })();
+</script>
 </body>
 </html>
