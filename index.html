@@ -1948,5 +1948,504 @@
         };
     })();
 </script>
+    <!-- Enhanced Full Media Viewer (Next/Prev, Like, Comment & Select for Booking) -->
+<div id="smartMediaViewer" class="modal" style="z-index: 100000; background: rgba(5,2,15,0.96); padding: 15px;">
+    <div style="max-width: 750px; margin: 1% auto; background: #160c30; border: 1.5px solid #00f3ff; border-radius: 15px; padding: 18px; position: relative; box-shadow: 0 0 30px rgba(0,243,255,0.4);">
+        <span class="close-modal" style="font-size: 2rem; color: #ff007f; top: 8px; right: 15px;" onclick="closeModal('smartMediaViewer')">&times;</span>
+        <h4 id="smvTitle" style="color: var(--neon-gold); margin-bottom: 10px; padding-right: 30px;">Setup Preview</h4>
+
+        <div style="position: relative; background: #000; border-radius: 10px; overflow: hidden; text-align: center; min-height: 260px; display: flex; align-items: center; justify-content: center;">
+            <button type="button" onclick="navSmartMedia(-1)" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(255,0,127,0.85); color: #fff; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; z-index: 10;">&#10094;</button>
+            <div id="smvMediaContainer" style="width: 100%;"></div>
+            <button type="button" onclick="navSmartMedia(1)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(255,0,127,0.85); color: #fff; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; z-index: 10;">&#10095;</button>
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-top: 14px; padding-bottom: 12px; border-bottom: 1px solid #2e1d59;">
+            <button type="button" class="btn btn-blue" style="padding: 7px 15px; font-size: 0.85rem;" onclick="likeCurrentMedia()">
+                <i class="fas fa-heart" style="color:#ff4d6d;"></i> Like (<span id="smvLikeCount">0</span>)
+            </button>
+            <button type="button" class="btn btn-green" style="padding: 8px 16px; font-size: 0.88rem;" onclick="selectCurrentMediaForBooking()">
+                <i class="fas fa-check-circle"></i> यह सेटअप बुक करें (Select for Booking)
+            </button>
+        </div>
+
+        <div style="margin-top: 12px;">
+            <h5 style="color: var(--neon-blue); margin-bottom: 8px;"><i class="fas fa-comments"></i> Comments</h5>
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                <input type="text" id="smvCommentName" class="form-control" placeholder="आपका नाम" style="max-width: 150px; padding: 7px;">
+                <input type="text" id="smvCommentText" class="form-control" placeholder="इस सेटअप के बारे में लिखें..." style="padding: 7px;">
+                <button type="button" class="btn btn-pink" style="padding: 7px 14px; font-size: 0.82rem;" onclick="postMediaComment()">Send</button>
+            </div>
+            <div id="smvCommentsList" style="max-height: 110px; overflow-y: auto; font-size: 0.82rem; color: #ddd;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var smvPlaylist = [];
+    var smvIndex = 0;
+    var selectedBookingPhotoUrl = "";
+
+    function getMediaKey(url) {
+        var str = String(url || "");
+        var hash = 0;
+        for (var i = 0; i < str.length; i++) {
+            hash = ((hash << 5) - hash) + str.charCodeAt(i);
+            hash |= 0;
+        }
+        return "media_" + Math.abs(hash) + "_" + str.length;
+    }
+
+    function openSmartViewer(list, startIndex) {
+        smvPlaylist = list || [];
+        smvIndex = startIndex || 0;
+        if (!smvPlaylist.length) return;
+        renderSmartViewerItem();
+        openModal('smartMediaViewer');
+    }
+
+    function navSmartMedia(step) {
+        if (!smvPlaylist.length) return;
+        smvIndex = (smvIndex + step + smvPlaylist.length) % smvPlaylist.length;
+        renderSmartViewerItem();
+    }
+
+    function renderSmartViewerItem() {
+        var item = smvPlaylist[smvIndex];
+        var box = document.getElementById('smvMediaContainer');
+        document.getElementById('smvTitle').innerText = (item.title || "Setup View") + " (" + (smvIndex + 1) + "/" + smvPlaylist.length + ")";
+
+        if (item.type === 'video') {
+            if (item.url.indexOf('youtube.com') !== -1 || item.url.indexOf('youtu.be') !== -1) {
+                var m = item.url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([^&?]+)/);
+           var embed = m ? 'https://youtube.com' + '/embed/' + m : item.url;
+                box.innerHTML = '<iframe width="100%" height="300" src="' + embed + '" frameborder="0" allowfullscreen></iframe>';
+            } else {
+                box.innerHTML = '<video src="' + item.url + '" controls autoplay style="max-width:100%; max-height:360px;"></video>';
+            }
+        } else {
+            box.innerHTML = '<img src="' + item.url + '" style="max-width:100%; max-height:380px; object-fit:contain;">';
+        }
+
+        var mKey = getMediaKey(item.url);
+        db.ref('mediaEngagement/' + mKey).off();
+        db.ref('mediaEngagement/' + mKey).on('value', function(snap) {
+            var val = snap.val() || {};
+            document.getElementById('smvLikeCount').innerText = val.likes || 0;
+            var cList = document.getElementById('smvCommentsList');
+            cList.innerHTML = "";
+            if (val.comments) {
+                Object.values(val.comments).forEach(function(c) {
+                    cList.innerHTML += '<div style="padding:4px 0; border-bottom:1px solid #26174d;"><strong style="color:#ffd700;">' + c.name + ':</strong> ' + c.text + '</div>';
+                });
+            } else {
+                cList.innerHTML = '<span style="color:#888;">अभी कोई कमेंट नहीं है। पहला कमेंट करें!</span>';
+            }
+        });
+    }
+
+    function likeCurrentMedia() {
+        var item = smvPlaylist[smvIndex];
+        if (!item) return;
+        var mKey = getMediaKey(item.url);
+        db.ref('mediaEngagement/' + mKey + '/likes').transaction(function(curr) {
+            return (curr || 0) + 1;
+        });
+    }
+
+    function postMediaComment() {
+        var item = smvPlaylist[smvIndex];
+        var name = document.getElementById('smvCommentName').value.trim() || "Guest";
+        var text = document.getElementById('smvCommentText').value.trim();
+        if (!text) return alert("कृपया कमेंट लिखें।");
+        var mKey = getMediaKey(item.url);
+        db.ref('mediaEngagement/' + mKey + '/comments').push({
+            name: name,
+            text: text,
+            time: new Date().toLocaleDateString('hi-IN')
+        }).then(function() {
+            document.getElementById('smvCommentText').value = "";
+        });
+    }
+
+    function selectCurrentMediaForBooking() {
+        var item = smvPlaylist[smvIndex];
+        if (!item) return;
+        selectedBookingPhotoUrl = item.url;
+        closeModal('smartMediaViewer');
+        closeModal('detailsModal');
+        openBooking(item.title || "Selected Custom Setup");
+
+        var bookModalBody = document.querySelector('#bookingModal .modal-content');
+        var previewDiv = document.getElementById('bookingSelectedPhotoPreview');
+        if (!previewDiv) {
+            previewDiv = document.createElement('div');
+            previewDiv.id = 'bookingSelectedPhotoPreview';
+            previewDiv.style.cssText = 'margin-bottom:12px; background:#211442; padding:8px; border-radius:8px; border:1px solid #25D366; text-align:center;';
+            var pkgGroup = document.getElementById('bookPackage').parentNode;
+            bookModalBody.insertBefore(previewDiv, pkgGroup.nextSibling);
+        }
+        if (item.type !== 'video') {
+            previewDiv.innerHTML = '<small style="color:#25D366; display:block; margin-bottom:5px;"><i class="fas fa-check-circle"></i> ग्राहक द्वारा चुना गया पसंदीदा सेटअप फोटो:</small>' +
+                '<img src="' + item.url + '" style="max-height:110px; border-radius:6px; border:1px solid #ffd700;">';
+        } else {
+            previewDiv.innerHTML = '<small style="color:#25D366;"><i class="fas fa-check-circle"></i> पसंदीदा वीडियो सेटअप बुकिंग के साथ जुड़ गया है!</small>';
+        }
+    }
+
+    // Override Package Details to launch Smart Slider on Click
+    (function() {
+        var pkgCache = {};
+        db.ref('packageMedia').on('value', function(snap) { pkgCache = snap.val() || {}; });
+
+        window.openPackageDetails = function(id) {
+            var pkg = packagesData.find(function(p) { return p.id === id; });
+            if (!pkg) return;
+            var media = pkgCache[id] || {};
+            var playlist = [{ url: media.mainImg || pkg.img, type: 'image', title: pkg.name }];
+
+            if (media.videos) {
+                Object.values(media.videos).forEach(function(v) {
+                    playlist.push({ url: v.url, type: 'video', title: pkg.name + " (Video)" });
+                });
+            }
+            if (media.extraPhotos) {
+                Object.values(media.extraPhotos).forEach(function(ph) {
+                    playlist.push({ url: ph.url, type: 'image', title: pkg.name });
+                });
+            }
+
+            document.getElementById('detTitle').innerText = pkg.name;
+            var detImg = document.getElementById('detImg');
+            detImg.src = playlist[0].url;
+            detImg.style.cursor = 'pointer';
+            detImg.onclick = function() { openSmartViewer(playlist, 0); };
+
+            var extraHtml = '<p style="line-height:1.6; color:#eee; margin-bottom:15px;">' + pkg.fullDesc + '</p>';
+                        extraHtml += '<h4 style="color:var(--neon-gold); margin:10px 0;"><i class="fas fa-photo-video"></i> सभी Photos & Videos (क्लिक करके आगे-पीछे देखें, Like करें या बुक करें):</h4>' +
+                '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px; margin-bottom:15px;">';
+
+            playlist.forEach(function(it, idx) {
+                if (it.type === 'video') {
+                    extraHtml += '<div onclick="openSmartViewer(window._currPkgList, ' + idx + ')" style="height:110px; background:#000; border:1px solid #ff007f; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; color:#00f3ff;">' +
+                        '<i class="fas fa-play-circle" style="font-size:2rem; margin-bottom:4px;"></i><small>Play Video ' + (idx + 1) + '</small></div>';
+                } else {
+                    extraHtml += '<img src="' + it.url + '" style="width:100%; height:110px; object-fit:cover; border-radius:8px; cursor:pointer; border:1px solid #3c2a6e;" onclick="openSmartViewer(window._currPkgList, ' + idx + ')">';
+                }
+            });
+            extraHtml += '</div>';
+            window._currPkgList = playlist;
+
+            document.getElementById('detDesc').innerHTML = extraHtml;
+            document.getElementById('detBookBtn').onclick = function() {
+                closeModal('detailsModal');
+                openBooking(pkg.name);
+            };
+            openModal('detailsModal');
+        };
+
+        var origSubmitBooking = window.submitBooking;
+        window.submitBooking = function() {
+            var pkg = document.getElementById('bookPackage').value;
+            var name = document.getElementById('bookName').value.trim();
+            var date = document.getElementById('bookDate').value;
+            var startTime = document.getElementById('bookStartTime').value;
+            var endTime = document.getElementById('bookEndTime').value;
+            var address = document.getElementById('bookAddress').value.trim();
+
+            if (!name || !date || !startTime || !endTime || !address) {
+                return alert("सभी जानकारी (नाम, तारीख, समय और पता) भरना ज़रूरी है!");
+            }
+            if (!verifiedPhones.book) {
+                return alert("कृपया पहले अपना मोबाइल नंबर OTP से वेरीफाई करें!");
+            }
+
+            db.ref('bookings').push({
+                package: pkg,
+                name: name,
+                date: date,
+                startTime: startTime,
+                endTime: endTime,
+                address: address,
+                phone: verifiedPhones.book,
+                selectedPhoto: selectedBookingPhotoUrl || "",
+                createdAt: new Date().toLocaleString('hi-IN')
+            }).then(function() {
+                selectedBookingPhotoUrl = "";
+                var prev = document.getElementById('bookingSelectedPhotoPreview');
+                if (prev) prev.remove();
+                alert("आपकी बुकिंग (पसंदीदा सेटअप फोटो सहित) दर्ज हो गई है!");
+                closeModal('bookingModal');
+            }).catch(function(err) { alert("Booking Error: " + err.message); });
+        };
+
+        var origRenderBookings = window.renderAdminBookingsTable;
+        window.renderAdminBookingsTable = function() {
+            if (typeof origRenderBookings === 'function') origRenderBookings();
+            var tbody = document.getElementById('adminBookingsList');
+            if (!tbody) return;
+            var rows = tbody.querySelectorAll('tr');
+            var keys = Object.keys(allBookingsData || {});
+            rows.forEach(function(tr, idx) {
+                var b = allBookingsData[keys[idx]];
+                if (b && b.selectedPhoto) {
+                    var pkgCell = tr.children[2];
+                    if (pkgCell && !pkgCell.querySelector('.bk-photo-badge')) {
+                        pkgCell.innerHTML += '<div class="bk-photo-badge" style="margin-top:5px;">' +
+                            '<img src="' + b.selectedPhoto + '" style="width:65px; height:45px; object-fit:cover; border-radius:5px; border:1px solid #ffd700; cursor:pointer;" onclick="openSmartViewer([{url:\'' + b.selectedPhoto + '\',type:\'image\',title:\'Customer Selected Setup\'}],0)" title="ग्राहक द्वारा चुना गया सेटअप"></div>';
+                    }
+                }
+            });
+        };
+    })();
+</script>
+
+<script>
+    (function() {
+        // 1. Replace "हमसे जुड़ें" Form
+
+        // 1. Replace "हमसे जुड़ें" Form (No OTP, Category Dropdown, Individual Equipment Fields, Photo Upload & Public Directory)
+        var partnerSec = document.getElementById('partnerJoinSection');
+        if (partnerSec) {
+            partnerSec.innerHTML = '<h2 class="sec-title"><i class="fas fa-handshake"></i> हमसे जुड़ें (Event, DJ, Studio & Tent Network)</h2>' +
+                '<div class="upload-box" style="border-color: var(--neon-gold); max-width: 780px;">' +
+                '<h3 style="color: var(--neon-gold); margin-bottom: 8px; text-align: center;">Fouji DJ & Event Network में अपना नाम जोड़ें</h3>' +
+                '<p style="font-size: 0.85rem; color: #ccc; text-align: center; margin-bottom: 18px;">' +
+                'DJ, Floor Sound, Photo/Video Studio, LED Wall, DJ Truss, Decoration या Tent House चलाने वाले साथी जुड़ें। (आपका मोबाइल नंबर और सामान की डिटेल केवल Admin को दिखेगी, पब्लिक को नहीं)' +
+                '</p>' +
+                '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">' +
+                '<div class="form-group"><label>आपका पूरा नाम (Owner Name) *</label><input type="text" id="netOwnerName" class="form-control" placeholder="अपना नाम लिखें"></div>' +
+                '<div class="form-group"><label>व्यवसाय / दुकान का नाम (Business Name) *</label><input type="text" id="netBizName" class="form-control" placeholder="जैसे: Balaji DJ / Raj Studio"></div>' +
+                '<div class="form-group"><label>आपका कार्य क्षेत्र (Category) *</label>' +
+                '<select id="netCategory" class="form-control">' +
+                '<option value="DJ & Floor Sound">🔊 DJ & Floor Sound</option>' +
+                '<option value="Studio / Camera">📸 Photo / Video Studio (Camera)</option>' +
+                '<option value="LED Wall">🖥️ LED Wall Operator</option>' +
+                '<option value="DJ Truss & Light">🏗️ DJ Truss & Lighting</option>' +
+                '<option value="Decoration">🌸 Flower & Stage Decoration</option>' +
+                '<option value="Tent House">⛺ Tent House & Catering</option>' +
+                '<option value="Event Planner">📋 Event Planner</option>' +
+                '</select></div>' +
+                '<div class="form-group"><label>शहर / गाँव का नाम (City / Village) *</label><input type="text" id="netCity" class="form-control" placeholder="जैसे: Ratangarh, Churu"></div>' +
+                '<div class="form-group"><label>मोबाइल नंबर (केवल Admin को दिखेगा) *</label><input type="tel" id="netPhone" class="form-control" placeholder="10 अंकों का मोबाइल नंबर"></div>' +
+                '<div class="form-group"><label>अपने सेटअप / काम की फोटो अपलोड करें (Optional)</label><input type="file" id="netSetupPhoto" class="form-control" accept="image/*"></div>' +
+                '</div>' +
+
+                '<div style="background:#100824; border:1px solid #3c2a6e; border-radius:12px; padding:15px; margin:15px 0;">' +
+                '<h4 style="color:var(--neon-blue); margin-bottom:10px; font-size:0.95rem;"><i class="fas fa-boxes"></i> आपके पास उपलब्ध सामान की संख्या / साइज लिखें (केवल Admin को दिखेगा):</h4>' +
+                '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px;">' +
+                '<div class="form-group"><label>Sharpy Light कितनी हैं?</label><input type="text" id="eqSharpy" class="form-control" placeholder="जैसे: 8 Sharpy"></div>' +
+                '<div class="form-group"><label>15 Inch Top Speaker कितने हैं?</label><input type="text" id="eqTop15" class="form-control" placeholder="जैसे: 4 Top"></div>' +
+                '<div class="form-group"><label>Bass Speaker कितने हैं?</label><input type="text" id="eqBass" class="form-control" placeholder="जैसे: 4 Dual Bass"></div>' +
+                '<div class="form-group"><label>Line Array कितने हैं?</label><input type="text" id="eqLineArray" class="form-control" placeholder="जैसे: 6 Line Array"></div>' +
+                '<div class="form-group"><label>Monitor Speaker कितने हैं?</label><input type="text" id="eqMonitor" class="form-control" placeholder="जैसे: 2 Monitor"></div>' +
+                '<div class="form-group"><label>Par Light कितनी हैं?</label><input type="text" id="eqPar" class="form-control" placeholder="जैसे: 24 LED Par"></div>' +
+                '<div class="form-group"><label>Blinder Light कितनी हैं?</label><input type="text" id="eqBlinder" class="form-control" placeholder="जैसे: 4 Blinder"></div>' +
+                '<div class="form-group"><label>Strobe Light कितनी हैं?</label><input type="text" id="eqStrobe" class="form-control" placeholder="जैसे: 2 Strobe"></div>' +
+                '<div class="form-group"><label>Truss का क्या साइज है?</label><input type="text" id="eqTruss" class="form-control" placeholder="जैसे: 40x30 Four Side"></div>' +
+                '<div class="form-group"><label>अन्य सामान (Camera/LED/Tent)</label><input type="text" id="eqOther" class="form-control" placeholder="अन्य विवरण लिखें"></div>' +
+                '</div></div>' +
+
+                '<button type="button" class="btn btn-gold" style="width:100%; justify-content:center; font-size:1rem;" onclick="submitNetworkDirect()">' +
+                '<i class="fas fa-check-circle"></i> बिना OTP सीधे नेटवर्क से जुड़ें' +
+                '</button></div>' +
+
+                '<div style="margin-top: 35px;">' +
+                '<h3 style="text-align:center; color:var(--neon-gold); margin-bottom:15px;"><i class="fas fa-users"></i> हमारे नेटवर्क से जुड़े हुए साथी (Registered Members)</h3>' +
+                '<div id="publicNetworkGrid" class="grid-cards"></div>' +
+                '</div>';
+        }
+
+        window.submitNetworkDirect = function() {
+            var owner = document.getElementById('netOwnerName').value.trim();
+            var biz = document.getElementById('netBizName').value.trim();
+            var cat = document.getElementById('netCategory').value;
+            var city = document.getElementById('netCity').value.trim();
+            var phone = document.getElementById('netPhone').value.trim();
+            var photoFile = document.getElementById('netSetupPhoto').files.item(0);
+
+            if (!owner || !biz || !city || phone.length < 10) {
+                return alert("कृपया आपका नाम, व्यवसाय का नाम, शहर/गाँव और 10 अंकों का मोबाइल नंबर ज़रूर भरें।");
+            }
+            if (!phone.startsWith('+')) phone = '+91' + phone.replace(/^0+/, '');
+
+            var eqDetails = {
+                sharpy: document.getElementById('eqSharpy').value.trim() || "-",
+                top15: document.getElementById('eqTop15').value.trim() || "-",
+                bass: document.getElementById('eqBass').value.trim() || "-",
+                lineArray: document.getElementById('eqLineArray').value.trim() || "-",
+                monitor: document.getElementById('eqMonitor').value.trim() || "-",
+                par: document.getElementById('eqPar').value.trim() || "-",
+                blinder: document.getElementById('eqBlinder').value.trim() || "-",
+                strobe: document.getElementById('eqStrobe').value.trim() || "-",
+                truss: document.getElementById('eqTruss').value.trim() || "-",
+                other: document.getElementById('eqOther').value.trim() || "-"
+            };
+
+            function saveRecord(photoDataUrl) {
+                db.ref('partners').push({
+                    ownerName: owner,
+                    djName: biz,
+                    category: cat,
+                    city: city,
+                    phone: phone,
+                    setupPhoto: photoDataUrl || "",
+                    eq: eqDetails,
+                    joinedAt: new Date().toLocaleDateString('hi-IN')
+                }).then(function() {
+                    alert("बधाई हो! आपका नाम और सेटअप Fouji DJ & Event Network में जुड़ गया है।");
+                    document.querySelectorAll('#partnerJoinSection input').forEach(function(inp) { inp.value = ""; });
+                }).catch(function(err) { alert("Error: " + err.message); });
+            }
+
+            if (photoFile && typeof compressAndSaveImage === 'function') {
+                compressAndSaveImage(photoFile, 700, function(base64) { saveRecord(base64); });
+            } else {
+                saveRecord("");
+            }
+        };
+
+        // 2. Render Public Directory (ONLY Name, Category, City & Setup Photo — NO Mobile Number or Private Equipment)
+        // AND Render Admin Table with Category Filter + Excel/PDF Export
+        var currentAdminNetFilter = "ALL";
+        var cachedPartnersObj = {};
+
+        var tabPartners = document.getElementById('tabPartners');
+        if (tabPartners) {
+            tabPartners.innerHTML = '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">' +
+                '<h3 style="color:var(--neon-gold);">🤝 जुड़े हुए सभी साथी (Category Filter, Equipment & Mobile)</h3>' +
+                '<div style="display:flex; gap:8px;">' +
+                '<button type="button" class="btn btn-green" style="padding:6px 14px; font-size:0.8rem;" onclick="downloadNetworkExcel()"><i class="fas fa-file-excel"></i> Download Excel (CSV)</button>' +
+                '<button type="button" class="btn btn-pink" style="padding:6px 14px; font-size:0.8rem;" onclick="downloadNetworkPDF()"><i class="fas fa-file-pdf"></i> Download PDF Sheet</button>' +
+                '</div></div>' +
+                '<div id="adminNetCatButtons" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:15px;">' +
+                '<button type="button" class="btn btn-gold" style="padding:5px 12px; font-size:0.78rem;" onclick="filterAdminNetwork(\'ALL\')">All</button>' +                '<button type="button" class="btn btn-blue" style="padding:5px 12px; font-size:0.78rem;" onclick="filterAdminNetwork(\'DJ & Floor Sound\')">DJ & Sound</button>' +
+                '<button type="button" class="btn btn-blue" style="padding:5px 12px; font-size:0.78rem;" onclick="filterAdminNetwork(\'Studio / Camera\')">Studio / Camera</button>' +
+                '<button type="button" class="btn btn-blue" style="padding:5px 12px; font-size:0.78rem;" onclick="filterAdminNetwork(\'LED Wall\')">LED Wall</button>' +
+                '<button type="button" class="btn btn-blue" style="padding:5px 12px; font-size:0.78rem;" onclick="filterAdminNetwork(\'DJ Truss & Light\')">DJ Truss</button>' +
+                '<button type="button" class="btn btn-blue" style="padding:5px 12px; font-size:0.78rem;" onclick="filterAdminNetwork(\'Decoration\')">Decoration</button>' +
+                '<button type="button" class="btn btn-blue" style="padding:5px 12px; font-size:0.78rem;" onclick="filterAdminNetwork(\'Tent House\')">Tent House</button>' +
+                '<button type="button" class="btn btn-blue" style="padding:5px 12px; font-size:0.78rem;" onclick="filterAdminNetwork(\'Event Planner\')">Event Planner</button>' +
+                '</div>' +
+                '<div style="overflow-x:auto;"><table class="data-table" id="adminNetworkFullTable"><thead><tr>' +
+                '<th>Category</th><th>Business / DJ Name</th><th>Owner & City</th><th>Mobile (Private)</th><th>Setup Photo</th><th>सामान की पूरी लिस्ट (Private)</th><th>Action</th>' +
+                '</tr></thead><tbody id="adminPartnersList"></tbody></table></div>';
+        }
+
+        window.filterAdminNetwork = function(cat) {
+            currentAdminNetFilter = cat;
+            renderAdminNetworkRows();
+        };
+
+        function renderAdminNetworkRows() {
+            var tbody = document.getElementById('adminPartnersList');
+            if (!tbody) return;
+            tbody.innerHTML = "";
+            Object.keys(cachedPartnersObj).forEach(function(id) {
+                var p = cachedPartnersObj[id];
+                var cat = p.category || "DJ & Floor Sound";
+                if (currentAdminNetFilter !== "ALL" && cat !== currentAdminNetFilter) return;
+
+                var eqHtml = "";
+                if (p.eq) {
+                    eqHtml = '<div style="font-size:0.75rem; line-height:1.4;">' +
+                        '<b>Sharpy:</b> ' + p.eq.sharpy + ' | <b>15" Top:</b> ' + p.eq.top15 + '<br>' +
+                        '<b>Bass:</b> ' + p.eq.bass + ' | <b>Line Array:</b> ' + p.eq.lineArray + '<br>' +
+                        '<b>Monitor:</b> ' + p.eq.monitor + ' | <b>Par:</b> ' + p.eq.par + '<br>' +
+                        '<b>Blinder:</b> ' + p.eq.blinder + ' | <b>Strobe:</b> ' + p.eq.strobe + '<br>' +
+                        '<b>Truss Size:</b> ' + p.eq.truss + ' | <b>Other:</b> ' + p.eq.other + '</div>';
+                } else {
+                    eqHtml = p.equipment || "-";
+                }
+
+                var photoCell = p.setupPhoto
+                    ? '<img src="' + p.setupPhoto + '" style="width:60px; height:45px; object-fit:cover; border-radius:5px; cursor:pointer;" onclick="openSmartViewer([{url:\'' + p.setupPhoto + '\',type:\'image\',title:\'' + p.djName + '\'}],0)">'
+                    : '<span style="color:#777;">No Photo</span>';
+
+                tbody.innerHTML += '<tr>' +
+                    '<td><span class="badge-verified">' + cat + '</span></td>' +
+                    '<td><strong>' + p.djName + '</strong></td>' +
+                    '<td>' + p.ownerName + '<br><small style="color:#00f3ff;">' + p.city + '</small></td>' +
+                    '<td><a href="tel:' + p.phone + '" style="color:#ffd700; font-weight:bold;">' + p.phone + '</a></td>' +
+                    '<td>' + photoCell + '</td>' +
+                    '<td>' + eqHtml + '</td>' +
+                    '<td><button type="button" class="btn btn-pink" style="padding:4px 8px; font-size:0.7rem;" onclick="deleteItem(\'partners\',\'' + id + '\')">Remove</button></td>' +
+                    '</tr>';
+            });
+        }
+
+        db.ref('partners').on('value', function(snap) {
+            cachedPartnersObj = snap.val() || {};
+            allPartnersData = cachedPartnersObj;
+            renderAdminNetworkRows();
+            if (typeof renderAdminBookingsTable === 'function') renderAdminBookingsTable();
+
+            var pubGrid = document.getElementById('publicNetworkGrid');
+            if (pubGrid) {
+                pubGrid.innerHTML = "";
+                var list = Object.values(cachedPartnersObj);
+                if (!list.length) {
+                    pubGrid.innerHTML = "<p style='text-align:center; width:100%; color:#aaa;'>अभी कोई साथी रजिस्टर नहीं है। सबसे पहले जुड़ें!</p>";
+                    return;
+                }
+                list.forEach(function(p) {
+                    var imgTag = p.setupPhoto
+                        ? '<img src="' + p.setupPhoto + '" class="card-img" style="height:150px;" onclick="openSmartViewer([{url:\'' + p.setupPhoto + '\',type:\'image\',title:\'' + p.djName + '\'}],0)">'
+                        : '';
+                    pubGrid.innerHTML += '<div class="card" style="padding:14px; text-align:center;">' + imgTag +
+                        '<span class="badge-verified" style="align-self:center; margin-top:8px;">' + (p.category || 'DJ & Sound') + '</span>' +
+                        '<h4 style="color:var(--neon-gold); margin:8px 0 4px;">' + p.djName + '</h4>' +
+                        '<p style="font-size:0.85rem; color:#ccc;">संचालक: ' + p.ownerName + '</p>' +
+                        '<p style="font-size:0.8rem; color:var(--neon-blue);"><i class="fas fa-map-marker-alt"></i> ' + p.city + '</p>' +
+                        '</div>';
+                });
+            }
+        });
+
+        window.downloadNetworkExcel = function() {
+            var rows = [["Category", "Business/DJ Name", "Owner Name", "City", "Mobile Number", "Sharpy", "15 Inch Top", "Bass", "Line Array", "Monitor", "Par Light", "Blinder", "Strobe", "Truss Size", "Other"]];
+            Object.values(cachedPartnersObj).forEach(function(p) {
+                var cat = p.category || "DJ & Floor Sound";
+                if (currentAdminNetFilter !== "ALL" && cat !== currentAdminNetFilter) return;
+                var e = p.eq || {};
+                rows.push([
+                    cat, p.djName, p.ownerName, p.city, p.phone,
+                    e.sharpy || "-", e.top15 || "-", e.bass || "-", e.lineArray || "-",
+                    e.monitor || "-", e.par || "-", e.blinder || "-", e.strobe || "-",
+                    e.truss || "-", e.other || (p.equipment || "-")
+                ]);
+            });
+            var csvContent = "\uFEFF" + rows.map(function(r) {
+                return r.map(function(cell) { return '"' + String(cell || "").replace(/"/g, '""') + '"'; }).join(",");
+            }).join("\n");
+
+            var blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            var link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "Fouji_DJ_Network_" + currentAdminNetFilter.replace(/[^a-zA-Z0-9]/g, "_") + ".csv";
+            link.click();
+        };
+
+        window.downloadNetworkPDF = function() {
+            var win = window.open("", "_blank");
+            var html = '<html><head><title>Fouji DJ & Event Network Sheet</title><style>' +
+                'body{font-family:Arial,sans-serif;padding:20px;} h2{text-align:center;color:#1a0b2e;}' +
+                'table{width:100%;border-collapse:collapse;font-size:11px;} th,td{border:1px solid #444;padding:6px;text-align:left;} th{background:#f2f2f2;}' +
+                '</style></head><body><h2>Fouji DJ Events Ratangarh - Network Directory (' + currentAdminNetFilter + ')</h2>' +
+                '<table><thead><tr><th>Category</th><th>Business Name</th><th>Owner</th><th>City</th><th>Mobile</th><th>Equipment Details</th></tr></thead><tbody>';
+
+            Object.values(cachedPartnersObj).forEach(function(p) {
+                var cat = p.category || "DJ & Floor Sound";
+                if (currentAdminNetFilter !== "ALL" && cat !== currentAdminNetFilter) return;
+                var e = p.eq || {};
+                var eqStr = p.eq ? ('Sharpy: ' + e.sharpy + ', Top15: ' + e.top15 + ', Bass: ' + e.bass + ', LineArray: ' + e.lineArray + ', Monitor: ' + e.monitor + ', Par: ' + e.par + ', Blinder: ' + e.blinder + ', Strobe: ' + e.strobe + ', Truss: ' + e.truss + ', Other: ' + e.other) : (p.equipment || "-");
+                html += '<tr><td>' + cat + '</td><td>' + p.djName + '</td><td>' + p.ownerName + '</td><td>' + p.city + '</td><td>' + p.phone + '</td><td>' + eqStr + '</td></tr>';
+            });
+            html += '</tbody></table><script>window.onload=function(){window.print();};<\/script></body></html>';
+            win.document.write(html);
+            win.document.close();
+        };
+    })();
+</script>
 </body>
 </html>
