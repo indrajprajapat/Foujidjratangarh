@@ -1613,5 +1613,91 @@
         box-shadow: 0 0 20px rgba(255, 0, 127, 0.6) !important;
     }
 </style>
+    <script>
+    function compressAndSaveImage(file, maxWidth, callback) {
+        if (!file || !file.type.startsWith('image/')) {
+            return alert("Free plan mein kripya Photo (JPG/PNG) chunein.");
+        }
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var img = new Image();
+            img.onload = function() {
+                var canvas = document.createElement('canvas');
+                var scale = Math.min(1, maxWidth / img.width);
+                canvas.width = img.width * scale;
+                canvas.height = img.height * scale;
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                var dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+                callback(dataUrl);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    window.adminUpdateLogo = function() {
+        var file = document.getElementById('adminLogoFile').files.item(0);
+        if (!file) return alert("Logo photo chunein.");
+        compressAndSaveImage(file, 400, function(base64Url) {
+            db.ref('siteSettings').update({ logoUrl: base64Url })
+                .then(function() { alert("Logo safaltapurvak update ho gaya!"); })
+                .catch(function(err) { alert("Error: " + err.message); });
+        });
+    };
+
+    window.adminAddCoverSlide = function() {
+        var title = document.getElementById('adminSlideTitle').value.trim() || "Fouji DJ Events Ratangarh";
+        var file = document.getElementById('adminCoverFile').files.item(0);
+        if (!file) return alert("Cover photo chunein.");
+        compressAndSaveImage(file, 1200, function(base64Url) {
+            db.ref('siteSettings/coverSlides').push({ title: title, img: base64Url })
+                .then(function() { alert("Nayi Cover Photo slider mein jud gayi!"); })
+                .catch(function(err) { alert("Error: " + err.message); });
+        });
+    };
+
+    window.adminDirectUpload = function() {
+        var caption = document.getElementById('adminDirectCaption').value.trim();
+        var file = document.getElementById('adminDirectFile').files.item(0);
+        if (!file) return alert("Photo chunein.");
+        compressAndSaveImage(file, 900, function(base64Url) {
+            db.ref('gallery').push({
+                name: "Fouji DJ Official",
+                url: base64Url,
+                caption: caption,
+                type: 'image',
+                approved: true,
+                timestamp: Date.now()
+            }).then(function() { alert("Photo seedhe gallery mein publish ho gayi!"); })
+              .catch(function(err) { alert("Error: " + err.message); });
+        });
+    };
+
+    window.uploadCustomerMedia = function() {
+        var name = document.getElementById('custMediaName').value.trim();
+        var file = document.getElementById('custMediaFile').files.item(0);
+        var caption = document.getElementById('custMediaCaption').value.trim();
+        var status = document.getElementById('custUploadStatus');
+        if (!name || !file) return alert("Kripya apna naam aur photo chunein.");
+        status.innerText = "Uploading... Kripya pratiksha karein...";
+        compressAndSaveImage(file, 900, function(base64Url) {
+            db.ref('gallery').push({
+                name: name,
+                url: base64Url,
+                caption: caption,
+                type: 'image',
+                approved: false,
+                timestamp: Date.now()
+            }).then(function() {
+                status.innerText = "Upload Safal! Admin dwara Approve hone ke baad yeh gallery mein dikhega.";
+                document.getElementById('custMediaFile').value = "";
+            }).catch(function(err) {
+                status.innerText = "";
+                alert("Error: " + err.message);
+            });
+        });
+    };
+</script>
 </body>
 </html>
