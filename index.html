@@ -1561,5 +1561,57 @@
         wrapper.appendChild(toggleBtn);
     });
 </script>
+    <style>
+    /* Full-Page Admin Dashboard & Home-Style Grid Buttons */
+    #adminDashboardModal {
+        padding: 0 !important;
+        background: var(--bg-dark) !important;
+    }
+    #adminDashboardModal .modal-content {
+        max-width: 100% !important;
+        width: 100% !important;
+        min-height: 100vh !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        border: none !important;
+        padding: 25px 5% !important;
+        background: radial-gradient(circle at top right, #1f1142, #090514 70%) !important;
+    }
+    #adminDashboardModal .close-modal {
+        top: 20px !important;
+        right: 30px !important;
+        font-size: 2.2rem !important;
+        color: var(--neon-pink) !important;
+    }
+    #adminDashboardModal .admin-nav {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)) !important;
+        gap: 15px !important;
+        border-bottom: 2px solid rgba(0, 243, 255, 0.25) !important;
+        padding-bottom: 22px !important;
+        margin-bottom: 25px !important;
+    }
+    #adminDashboardModal .admin-nav button {
+        background: linear-gradient(145deg, #1b1038, #120a26) !important;
+        border: 1px solid rgba(0, 243, 255, 0.35) !important;
+        border-radius: 14px !important;
+        padding: 18px 15px !important;
+        font-size: 0.95rem !important;
+        font-weight: 600 !important;
+        color: #fff !important;
+        text-align: center !important;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5) !important;
+        transition: all 0.3s ease !important;
+    }
+    #adminDashboardModal .admin-nav button:hover {
+        border-color: var(--neon-gold) !important;
+        transform: translateY(-3px) !important;
+    }
+    #adminDashboardModal .admin-nav button.active {
+        background: linear-gradient(45deg, #ff007f, #ff5e00) !important;
+        border-color: var(--neon-gold) !important;
+        box-shadow: 0 0 20px rgba(255, 0, 127, 0.6) !important;
+    }
+</style>
 </body>
 </html>
