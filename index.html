@@ -1699,5 +1699,133 @@
         });
     };
 </script>
+    <script>
+    (function() {
+        var adminNav = document.querySelector('#adminDashboardModal .admin-nav');
+        var adminContent = document.querySelector('#adminDashboardModal .modal-content');
+        if (!adminNav || !adminContent) return;
+
+        var pkgTabBtn = document.createElement('button');
+        pkgTabBtn.type = 'button';
+        pkgTabBtn.innerHTML = '📦 Package Photo/Video';
+        pkgTabBtn.onclick = function() { switchAdminTab('tabPackageMedia', this); };
+        adminNav.appendChild(pkgTabBtn);
+
+        var pkgTabDiv = document.createElement('div');
+        pkgTabDiv.id = 'tabPackageMedia';
+        pkgTabDiv.className = 'admin-tab-content';
+        pkgTabDiv.innerHTML = '<h3 style="color:var(--neon-gold); margin-bottom:15px;">📦 Packages mein Photo aur Video Add / Update Karein</h3>' +
+            '<div class="upload-box" style="margin-top:0; border-color:var(--neon-blue);">' +
+            '<div class="form-group"><label>1. Package Chunein *</label>' +
+            '<select id="adminPkgSelect" class="form-control">' +
+            '<option value="basic">Basic DJ Package</option>' +
+            '<option value="premium">Premium DJ Package</option>' +
+            '<option value="royal">Royal Wedding Package</option>' +
+            '<option value="pickup">Pickup DJ Package</option>' +
+            '<option value="ghodi">Shahi Ghodi (Wedding Horse)</option>' +
+            '</select></div>' +
+            '<div class="form-group"><label>2. Package ki Main Photo Upload Karein (Optional)</label>' +
+            '<input type="file" id="adminPkgPhotoFile" class="form-control" accept="image/*"></div>' +
+            '<div class="form-group"><label>3. Package ka Video Link (YouTube / Instagram / MP4 Link) (Optional)</label>' +
+            '<input type="url" id="adminPkgVideoUrl" class="form-control" placeholder="https://youtube.com... ya direct video link"></div>' +
+            '<div class="form-group"><label>4. Extra Event Photo Upload Karein (More Details mein dikhegi) (Optional)</label>' +
+            '<input type="file" id="adminPkgExtraPhoto" class="form-control" accept="image/*"></div>' +
+            '<button type="button" class="btn btn-pink" style="width:100%; justify-content:center;" onclick="savePackageMedia()"><i class="fas fa-save"></i> Save Package Photo / Video</button>' +
+            '</div>' +
+            '<div id="adminPkgMediaList" style="margin-top:20px;"></div>';
+        adminContent.appendChild(pkgTabDiv);
+
+        window.savePackageMedia = function() {
+            var pkgId = document.getElementById('adminPkgSelect').value;
+            var mainFile = document.getElementById('adminPkgPhotoFile').files.item(0);
+            var videoUrl = document.getElementById('adminPkgVideoUrl').value.trim();
+            var extraFile = document.getElementById('adminPkgExtraPhoto').files.item(0);
+
+            if (!mainFile && !videoUrl && !extraFile) {
+                return alert("Kripya kam se kam ek Photo ya Video link chunein.");
+            }
+
+            if (mainFile) {
+                compressAndSaveImage(mainFile, 800, function(base64Url) {
+                    db.ref('packageMedia/' + pkgId).update({ mainImg: base64Url });
+                    alert("Package ki Main Photo update ho gayi!");
+                });
+            }
+            if (videoUrl) {
+                db.ref('packageMedia/' + pkgId + '/videos').push({ url: videoUrl, addedAt: Date.now() });
+                document.getElementById('adminPkgVideoUrl').value = "";
+                alert("Package mein Video jud gaya!");
+            }
+            if (extraFile) {
+                compressAndSaveImage(extraFile, 800, function(base64Url) {
+                    db.ref('packageMedia/' + pkgId + '/extraPhotos').push({ url: base64Url, addedAt: Date.now() });
+                    alert("Package mein Extra Photo jud gayi!");
+                });
+            }
+        };
+
+        function getYoutubeEmbed(url) {
+            var match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([^&?]+)/);
+            return match ? 'https://youtube.com' + match[1] : null;
+        }
+
+        var livePkgMedia = {};
+        db.ref('packageMedia').on('value', function(snap) {
+            livePkgMedia = snap.val() || {};
+            var pkgContainer = document.getElementById('packagesContainer');
+            if (pkgContainer && typeof packagesData !== 'undefined') {
+                pkgContainer.innerHTML = "";
+                packagesData.forEach(function(pkg) {
+                    var customImg = (livePkgMedia[pkg.id] && livePkgMedia[pkg.id].mainImg) ? livePkgMedia[pkg.id].mainImg : pkg.img;
+                    var hasVidBadge = (livePkgMedia[pkg.id] && livePkgMedia[pkg.id].videos) ? '<span class="badge-verified" style="position:absolute; top:10px; right:10px;"><i class="fas fa-video"></i> Video Available</span>' : '';
+                    pkgContainer.innerHTML += '<div class="card" style="position:relative;">' + hasVidBadge +
+                        '<img src="' + customImg + '" class="card-img" onclick="openPackageDetails(\'' + pkg.id + '\')" alt="' + pkg.name + '">' +
+                        '<div class="card-body">' +
+                        '<h3 class="card-title">' + pkg.name + '</h3>' +
+                        '<p class="card-desc">' + pkg.shortDesc + '</p>' +
+                        '<div class="card-actions">' +
+                        '<button type="button" class="btn btn-blue" onclick="openPackageDetails(\'' + pkg.id + '\')"><i class="fas fa-info-circle"></i> Photos & Videos</button>' +
+                        '<button type="button" class="btn btn-pink" onclick="openBooking(\'' + pkg.name + '\')"><i class="fas fa-calendar-check"></i> Booking Now</button>' +
+                        '</div></div></div>';
+                });
+            }
+        });
+
+        window.openPackageDetails = function(id) {
+            var pkg = packagesData.find(function(p) { return p.id === id; });
+            if (!pkg) return;
+            var media = livePkgMedia[id] || {};
+            document.getElementById('detTitle').innerText = pkg.name;
+            document.getElementById('detImg').src = media.mainImg || pkg.img;
+
+            var extraHtml = '<p style="line-height:1.6; color:#eee; margin-bottom:15px;">' + pkg.fullDesc + '</p>';
+            if (media.videos) {
+                extraHtml += '<h4 style="color:var(--neon-gold); margin:15px 0 8px;"><i class="fas fa-video"></i> Live Event Videos:</h4>';
+                Object.values(media.videos).forEach(function(v) {
+                    var yt = getYoutubeEmbed(v.url);
+                    if (yt) {
+                        extraHtml += '<iframe width="100%" height="240" src="' + yt + '" frameborder="0" allowfullscreen style="border-radius:10px; margin-bottom:10px;"></iframe>';
+                    } else {
+                        extraHtml += '<video src="' + v.url + '" controls style="width:100%; border-radius:10px; margin-bottom:10px;"></video>';
+                    }
+                });
+            }
+            if (media.extraPhotos) {
+                extraHtml += '<h4 style="color:var(--neon-blue); margin:15px 0 8px;"><i class="fas fa-images"></i> Setup Photos:</h4><div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:8px; margin-bottom:15px;">';
+                Object.values(media.extraPhotos).forEach(function(ph) {
+                    extraHtml += '<img src="' + ph.url + '" style="width:100%; height:120px; object-fit:cover; border-radius:8px; cursor:pointer;" onclick="window.open(\'' + ph.url + '\',\'_blank\')">';
+                });
+                extraHtml += '</div>';
+            }
+
+            document.getElementById('detDesc').innerHTML = extraHtml;
+            document.getElementById('detBookBtn').onclick = function() {
+                closeModal('detailsModal');
+                openBooking(pkg.name);
+            };
+            openModal('detailsModal');
+        };
+    })();
+</script>
 </body>
 </html>
