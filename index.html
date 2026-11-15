@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fouji DJ Events Ratangarh | Sound, Lighting & DJ Network</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Rozha+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+
+    <style>
+        :root {
+            --bg-dark: #090514;
+            --card-bg: #150d2b;
+            --neon-pink: #ff007f;
+            --neon-blue: #00f3ff;
+            --neon-gold: #ffd700;
+            --saffron: #FF9933;
+            --white: #FFFFFF;
+            --green: #138808;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body {
+            background-color: var(--bg-dark);
+            color: #fff;
+            background-image: radial-gradient(circle at 15% 50%, rgba(255, 0, 127, 0.14), transparent 30%),
+                              radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.14), transparent 30%);
+            overflow-x: hidden;
+        }
+        .top-bar {
+            background: linear-gradient(90deg, #1a0b2e, #2d1154, #1a0b2e);
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .live-clock { color: var(--neon-blue); font-weight: 600; }
+        .ganesh-header {
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--neon-gold);
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+        .ganesh-header img {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1.5px solid var(--neon-gold);
+            object-fit: cover;
+        }
+        .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .admin-trigger-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--neon-gold);
+            color: var(--neon-gold);
+            padding: 5px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: 0.3s;
+        }
+        .admin-trigger-btn:hover { background: var(--neon-gold); color: #000; font-weight: 600; }
+        .remixer-btn {
+            background: rgba(0, 243, 255, 0.15);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 5px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: 0.3s;
+        }
+        .remixer-btn:hover { background: var(--neon-blue); color: #000; font-weight: 600; }
+        .brand-section { text-align: center; padding: 20px 15px; background: rgba(0,0,0,0.6); }
+        .brand-logo-wrap { display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .brand-logo { width: 85px; height: 85px; border-radius: 50%; border: 3px solid var(--neon-blue); box-shadow: 0 0 20px var(--neon-pink); object-fit: cover; }
+        .tiranga-title {
+            font-family: 'Rozha One', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            letter-spacing: 2px;
+            background: linear-gradient(180deg, var(--saffron) 25%, var(--white) 50%, var(--green) 75%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0px 3px 6px rgba(0,0,0,0.9));
+            text-transform: uppercase;
+        }
+        .welcome-banner { background: linear-gradient(90deg, transparent, rgba(255, 0, 127, 0.35), transparent); padding: 8px; margin-top: 10px; color: #ffd700; font-weight: 600; font-size: 0.95rem; }
+        .hero-slider { position: relative; width: 100%; height: 400px; overflow: hidden; border-top: 2px solid var(--neon-pink); border-bottom: 2px solid var(--neon-blue); }
+        .slide { position: absolute; width: 100%; height: 100%; opacity: 0; transition: opacity 1s ease-in-out; background-size: cover; background-position: center; }
+        .slide.active { opacity: 1; }
+        .slide-overlay { width: 100%; height: 100%; background: linear-gradient(to top, var(--bg-dark) 5%, rgba(9,5,20,0.35) 60%, rgba(9,5,20,0.7) 100%); display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding: 30px 20px; text-align: center; }
+        .slide-overlay h2 { font-size: 1.8rem; text-shadow: 0 0 15px var(--neon-pink); margin-bottom: 10px; }
+        .quick-cta { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+        .btn { padding: 10px 20px; border-radius: 30px; border: none; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; font-size: 0.9rem; }
+        .btn-pink { background: linear-gradient(45deg, #ff007f, #ff5e00); color: #fff; box-shadow: 0 0 15px rgba(255,0,127,0.5); }
+        .btn-green { background: #25D366; color: #fff; box-shadow: 0 0 15px rgba(37,211,102,0.4); }
+        .btn-blue { background: linear-gradient(45deg, #0072ff, #00c6ff); color: #fff; }
+        .btn-gold { background: linear-gradient(45deg, #f59e0b, #fbbf24); color: #000; }
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 30px 15px; }
+        .sec-title { text-align: center; font-size: 1.9rem; margin-bottom: 25px; color: var(--neon-blue); text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 0 10px rgba(0,243,255,0.4); }
+        .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+        .card { background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 15px; overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
+        .card:hover { border-color: var(--neon-pink); transform: translateY(-5px); }
+        .card-img { width: 100%; height: 190px; object-fit: cover; cursor: pointer; }
+        .card-body { padding: 18px; }
+        .card-title { font-size: 1.25rem; color: var(--neon-gold); margin-bottom: 10px; }
+        .card-desc { font-size: 0.88rem; color: #ccc; line-height: 1.5; margin-bottom: 15px; }
+        .card-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .card-actions .btn { flex: 1; justify-content: center; padding: 8px 12px; font-size: 0.82rem; }
+        .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
+        .media-item { background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); }
+        .media-item img, .media-item video { width: 100%; height: 200px; object-fit: cover; cursor: pointer; display: block; }
+        .media-info { padding: 12px; font-size: 0.85rem; }
+        .upload-box { background: rgba(21, 13, 43, 0.95); border: 1px dashed var(--neon-pink); padding: 22px; border-radius: 15px; margin-top: 25px; max-width: 650px; margin-left: auto; margin-right: auto; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: var(--neon-blue); }
+        .form-control { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #3c2a6e; background: #0d071f; color: #fff; font-size: 0.9rem; }
+        .form-control:focus { outline: none; border-color: var(--neon-pink); }
+        .review-card { background: var(--card-bg); padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid var(--neon-gold); }
+        .stars { color: var(--neon-gold); margin-bottom: 5px; }
+        .social-actions { display: flex; gap: 15px; margin-top: 10px; font-size: 0.85rem; }
+        .social-actions button { background: none; border: none; color: var(--neon-blue); cursor: pointer; }
+        .replies-box { margin-top: 10px; padding-left: 15px; border-left: 2px solid #333; font-size: 0.85rem; }
+        .contact-section { background: linear-gradient(135deg, #150d2b, #090514); border-top: 2px solid var(--neon-gold); padding: 40px 15px; margin-top: 40px; }
+        .contact-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .contact-box p { margin-bottom: 10px; font-size: 0.95rem; color: #ddd; }
+        .contact-box a { color: var(--neon-blue); text-decoration: none; }
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); overflow-y: auto; padding: 20px 10px; }
+        .modal-content { background: #170e30; margin: 2% auto; padding: 25px; border: 1px solid var(--neon-pink); border-radius: 15px; max-width: 700px; position: relative; box-shadow: 0 0 30px rgba(255,0,127,0.4); }
+        .close-modal { position: absolute; right: 18px; top: 12px; font-size: 1.8rem; color: #fff; cursor: pointer; }
+        .otp-row { display: flex; gap: 8px; }
+        .badge-verified { background: #138808; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 0.72rem; }
+        .badge-pending { background: #d97706; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 0.72rem; }
+        .admin-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .admin-nav button { background: #26184d; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+        .admin-nav button.active { background: var(--neon-pink); font-weight: bold; }
+        .admin-tab-content { display: none; }
+        .admin-tab-content.active { display: block; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.8rem; }
+        .data-table th, .data-table td { border: 1px solid #333; padding: 8px; text-align: left; }
+        .data-table th { background: #26184d; color: var(--neon-gold); }
+        .cal-controls { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
+        .cal-day-name { font-weight: bold; color: var(--neon-gold); font-size: 0.8rem; padding: 5px; }
+        .cal-cell { background: #211442; border: 1px solid #3c2a6e; padding: 10px 4px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; min-height: 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .cal-cell.has-booking { background: linear-gradient(135deg, #ff007f, #9d174d); border-color: var(--neon-gold); font-weight: bold; box-shadow: 0 0 10px rgba(255,0,127,0.5); }
+        .cal-cell:hover { border-color: var(--neon-blue); }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="live-clock" id="liveClock"><i class="far fa-clock"></i> Loading Time...</div>
+        <div class="ganesh-header">
+            <img src="https://images.unsplash.com/photo-1506199158893-2c7a3f4f3f3b?auto=format&fit=crop&w=1200&q=80" alt="Ganesh Ji">
+            <span>॥ श्री गणेशाय नमः ॥</span>
+        </div>
+        <div class="top-actions">
+            <button type="button" class="remixer-btn" onclick="openModal('remixerModal')"><i class="fas fa-headphones"></i> Remixer Login / Account</button>
+            <button type="button" class="admin-trigger-btn" onclick="openModal('adminLoginModal')"><i class="fas fa-user-shield"></i> Admin Control</button>
+        </div>
+    </div>
+
+    <header class="brand-section">
+        <div class="brand-logo-wrap">
+            <img id="siteLogo" class="brand-logo" src="https://images.unsplash.com/photo-1506199158893-2c7a3f4f3f3b?auto=format&fit=crop&w=1200&q=80" alt="Fouji DJ Logo">
+            <div>
+                <h1 class="tiranga-title">FOUJI DJ EVENTS RATANGARH</h1>
+                <p style="color: #00f3ff; letter-spacing: 2px; font-size: 0.9rem;">PREMIUM SOUND • CONCERT LIGHTING • WEDDING EVENTS</p>
+            </div>
+        </div>
+        <div class="welcome-banner" id="adminMessageBanner">
+            🎉 शादी, पार्टी और हर शुभ अवसर पर शानदार डीजे साउंड एवं लाइटिंग बुकिंग के लिए संपर्क करें! 🎉
+        </div>
+    </header>
+
+    <section class="hero-slider" id="heroSlider"></section>
+
+    <section class="container" id="packagesSection">
+        <h2 class="sec-title"><i class="fas fa-music"></i> Our DJ & Event Packages</h2>
+        <div class="grid-cards" id="packagesContainer"></div>
+    </section>
+
+    <section class="container" id="gallerySection">
+        <h2 class="sec-title"><i class="fas fa-photo-video"></i> Event Photo & Video Gallery</h2>
+        <div class="media-grid" id="galleryContainer">
+            <p style="text-align:center; width:100%; color:#aaa;">Loading gallery...</p>
+        </div>
+        <div class="upload-box">
+            <h3 style="color: var(--neon-gold); margin-bottom: 10px; text-align: center;"><i class="fas fa-cloud-upload-alt"></i> अपनी फोटो या वीडियो गैलरी में अपलोड करें</h3>
+            <p style="font-size: 0.8rem; color: #bbb; text-align: center; margin-bottom: 15px;">(Admin द्वारा Approve करने के बाद आपकी फोटो/वीडियो वेबसाइट पर दिखेगी)</p>
+            <div class="form-group">
+                <label>आपका नाम (Your Name) *</label>
+                <input type="text" id="custMediaName" class="form-control" placeholder="अपना नाम लिखें">
+            </div>
+            <div class="form-group">
+                <label>फोटो या वीडियो चुनें (Photo/Video) *</label>
+                <input type="file" id="custMediaFile" class="form-control" accept="image/*,video/*">
+            </div>
+            <div class="form-group">
+                <label>कैप्शन / विवरण (Optional)</label>
+                <input type="text" id="custMediaCaption" class="form-control" placeholder="इवेंट के बारे में कुछ लिखें">
+            </div>
+            <button type="button" class="btn btn-pink" style="width:100%; justify-content:center;" onclick="uploadCustomerMedia()">
+                <i class="fas fa-upload"></i> Upload Now
+            </button>
+            <p id="custUploadStatus" style="margin-top:10px; font-size:0.85rem; text-align:center; color:#00f3ff;"></p>
+        </div>
+    </section>
+    <section class="container" id="remixSection">
+        <h2 class="sec-title"><i class="fas fa-headphones-alt"></i> DJ Remix Songs & Videos</h2>
+        <div style="text-align:center; margin-bottom:20px;">
+            <button type="button" class="btn btn-blue" onclick="openModal('remixerModal')">
+                <i class="fas fa-user-plus"></i> DJ Remixer अपना अकाउंट बनाएं / गाना अपलोड करें
+            </button>
+        </div>
+        <div class="media-grid" id="remixContainer">
+            <p style="text-align:center; width:100%; color:#aaa;">Loading DJ Remix tracks...</p>
+        </div>
+    </section>
+
+    <section class="container" id="partnerJoinSection">
+        <h2 class="sec-title"><i class="fas fa-handshake"></i> हमसे जुड़ें (DJ & Floor Sound Network)</h2>
+        <div class="upload-box" style="border-color: var(--neon-gold);">
+            <h3 style="color: var(--neon-gold); margin-bottom: 8px; text-align: center;">हमसे जुड़ने के लिए संपर्क करें</h3>
+            <p style="font-size: 0.85rem; color: #ccc; text-align: center; margin-bottom: 15px;">
+                यदि आप भी DJ या Floor Sound चलाते हैं, तो अपना विवरण साझा करके Fouji DJ Network से जुड़ें ताकि एक्स्ट्रा बुकिंग आपके साथ साझा की जा सके।
+            </p>
+            <div class="form-group">
+                <label>आपका पूरा नाम (Owner Name) *</label>
+                <input type="text" id="partOwnerName" class="form-control" placeholder="अपना नाम लिखें">
+            </div>
+            <div class="form-group">
+                <label>DJ या Sound का नाम (DJ / Sound Name) *</label>
+                <input type="text" id="partDjName" class="form-control" placeholder="जैसे: Balaji DJ Sound Ratangarh">
+            </div>
+            <div class="form-group">
+                <label>शहर / गाँव का नाम (City / Village) *</label>
+                <input type="text" id="partCity" class="form-control" placeholder="जैसे: Ratangarh, Churu">
+            </div>
+            <div class="form-group">
+                <label>मोबाइल नंबर (+91 के साथ OTP वेरिफिकेशन के लिए) *</label>
+                <div class="otp-row">
+                    <input type="tel" id="partPhone" class="form-control" placeholder="+919876543210">
+                    <button type="button" class="btn btn-blue" onclick="sendOTP('partner')">Send OTP</button>
+                </div>
+            </div>
+            <div class="form-group" id="partnerOtpGroup" style="display:none;">
+                <label>OTP दर्ज करें *</label>
+                <div class="otp-row">
+                    <input type="text" id="partnerOtpInput" class="form-control" placeholder="6-digit OTP">
+                    <button type="button" class="btn btn-green" onclick="verifyOTP('partner')">Verify OTP</button>
+                </div>
+            </div>
+            <p id="partnerVerifiedBadge" style="display:none; color:#25D366; font-size:0.85rem; margin-bottom:10px;"><i class="fas fa-check-circle"></i> मोबाइल नंबर वेरीफाई हो गया है!</p>
+            <div class="form-group">
+                <label>आपके पास उपलब्ध सामान की लिस्ट और क्वालिटी (Optional)</label>
+                <textarea id="partEquipment" class="form-control" rows="3" placeholder="उदाहरण: 4 Top, 4 Bass, 8 Sharpy Light, Four Side Truss, Pickup DJ, Generator..."></textarea>
+            </div>
+            <button type="button" class="btn btn-gold" style="width:100%; justify-content:center;" onclick="submitPartnerForm()">
+                <i class="fas fa-paper-plane"></i> नेटवर्क से जुड़ने के लिए सबमिट करें
+            </button>
+        </div>
+    </section>
+    <section class="container" id="reviewsSection">
+        <h2 class="sec-title"><i class="fas fa-star"></i> Customer Reviews & Ratings</h2>
+        <div class="upload-box" style="margin-bottom: 30px; border-color: var(--neon-pink);">
+            <h4 style="color: var(--neon-gold); margin-bottom: 10px;">अपना अनुभव और रेटिंग साझा करें</h4>
+            <div class="form-group">
+                <label>आपका नाम *</label>
+                <input type="text" id="revName" class="form-control" placeholder="आपका नाम">
+            </div>
+            <div class="form-group">
+                <label>रेटिंग चुनें *</label>
+                <select id="revRating" class="form-control">
+                    <option value="5">⭐⭐⭐⭐⭐ (5/5 - Excellent)</option>
+                    <option value="4">⭐⭐⭐⭐ (4/5 - Very Good)</option>
+                    <option value="3">⭐⭐⭐ (3/5 - Good)</option>
+                    <option value="2">⭐⭐ (2/5 - Average)</option>
+                    <option value="1">⭐ (1/5 - Poor)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>आपका कमेंट / रिव्यू *</label>
+                <textarea id="revComment" class="form-control" rows="3" placeholder="Fouji DJ Events के बारे में लिखें..."></textarea>
+            </div>
+            <button type="button" class="btn btn-pink" onclick="submitReview()">Submit Review</button>
+        </div>
+        <div id="reviewsContainer" style="max-width: 800px; margin: 0 auto;"></div>
+    </section>
+
+    <footer class="contact-section">
+        <h2 class="sec-title" style="font-size: 1.6rem;">Contact For Booking Details</h2>
+        <div class="contact-grid">
+            <div class="contact-box">
+                <h3 style="color: var(--neon-gold); margin-bottom: 12px;">📞 कॉलिंग एवं व्हाट्सएप</h3>
+                <p><strong>कॉलिंग नंबर:</strong><br>
+                    <a href="tel:+917023370739">+91 7023370739</a>, 
+                    <a href="tel:+919119276526">+91 9119276526</a>,<br>
+                    <a href="tel:+917725930617">+91 7725930617</a>, 
+                    <a href="tel:+919001181847">+91 9001181847</a>
+                </p>
+                <p><strong>व्हाट्सएप नंबर:</strong> <a href="https://wa.me/919001181847" target="_blank">+91 9001181847</a></p>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:15px;">
+                    <a href="tel:+917023370739" class="btn btn-pink"><i class="fas fa-phone-alt"></i> अभी कॉल करें (7023370739)</a>
+                    <a href="https://wa.me/919001181847" target="_blank" class="btn btn-green"><i class="fab fa-whatsapp"></i> WhatsApp चैट</a>
+                </div>
+            </div>
+            <div class="contact-box">
+                <h3 style="color: var(--neon-gold); margin-bottom: 12px;">📍 पता एवं सोशल मीडिया</h3>
+                <p><strong>ईमेल:</strong> <a href="mailto:Foujidjeventsratangarh@gmail.com">Foujidjeventsratangarh@gmail.com</a></p>
+                <p><strong>पता:</strong> Fouji DJ Ratangarh, Churu, Rajasthan</p>
+                <p><strong>Instagram:</strong><br>
+                    📸 <a href="https://instagram.com/fouji_dj_events_ratangarh" target="_blank">@fouji_dj_events_ratangarh</a><br>
+                    📸 <a href="https://instagram.com/fouji_dj_ratangarh_" target="_blank">@fouji_dj_ratangarh_</a><br>
+                    📸 <a href="https://instagram.com/fouji_floor_dj_ratangarh" target="_blank">@fouji_floor_dj_ratangarh</a>
+                </p>
+            </div>
+        </div>
+        <p style="text-align:center; margin-top:30px; font-size:0.8rem; color:#777;">© 2026 Fouji DJ Events Ratangarh. All Rights Reserved.</p>
+    </footer>
+    <div id="recaptcha-container"></div>
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('detailsModal')">&times;</span>
+            <h2 id="detTitle" style="color:var(--neon-gold); margin-bottom:10px;"></h2>
+            <img id="detImg" src="" style="width:100%; height:240px; object-fit:cover; border-radius:10px; margin-bottom:15px;">
+            <p id="detDesc" style="line-height:1.6; color:#eee; margin-bottom:20px;"></p>
+            <button type="button" class="btn btn-pink" id="detBookBtn" style="width:100%; justify-content:center;">Book This Package Now</button>
+        </div>
+    </div>
+
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('bookingModal')">&times;</span>
+            <h2 style="color:var(--neon-pink); margin-bottom:15px;"><i class="fas fa-calendar-check"></i> DJ Setup Booking</h2>
+            <div class="form-group">
+                <label>चयनित पैकेज (Selected Package) *</label>
+                <input type="text" id="bookPackage" class="form-control" readonly>
+            </div>
+            <div class="form-group">
+                <label>ग्राहक का पूरा नाम (Customer Name) *</label>
+                <input type="text" id="bookName" class="form-control" placeholder="अपना पूरा नाम लिखें">
+            </div>
+            <div class="form-group">
+                <label>किस तारीख को DJ चाहिए (Event Date) *</label>
+                <input type="date" id="bookDate" class="form-control">
+            </div>
+            <div style="display:flex; gap:10px;">
+                <div class="form-group" style="flex:1;">
+                    <label>कितने बजे से (Start Time) *</label>
+                    <input type="time" id="bookStartTime" class="form-control">
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>कितने बजे तक (End Time) *</label>
+                    <input type="time" id="bookEndTime" class="form-control">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>इवेंट का पता (Event Address) *</label>
+                <input type="text" id="bookAddress" class="form-control" placeholder="गाँव / शहर का पूरा पता">
+            </div>
+            <div class="form-group">
+                <label>मोबाइल नंबर (+91 के साथ OTP वेरिफिकेशन के लिए) *</label>
+                <div class="otp-row">
+                    <input type="tel" id="bookPhone" class="form-control" placeholder="+919876543210">
+                    <button type="button" class="btn btn-blue" onclick="sendOTP('book')">Send OTP</button>
+                </div>
+            </div>
+            <div class="form-group" id="bookOtpGroup" style="display:none;">
+                <label>मोबाइल पर आया OTP दर्ज करें *</label>
+                <div class="otp-row">
+                    <input type="text" id="bookOtpInput" class="form-control" placeholder="6-digit OTP">
+                    <button type="button" class="btn btn-green" onclick="verifyOTP('book')">Verify OTP</button>
+                </div>
+            </div>
+            <p id="bookVerifiedBadge" style="display:none; color:#25D366; font-size:0.9rem; margin-bottom:10px;"><i class="fas fa-check-circle"></i> मोबाइल नंबर वेरीफाई हो गया है!</p>
+            <button type="button" class="btn btn-pink" style="width:100%; justify-content:center; margin-top:10px;" onclick="submitBooking()">
+                <i class="fas fa-check"></i> Confirm Booking
+            </button>
+        </div>
+    </div>
+    <div id="remixerModal" class="modal">
+        <div class="modal-content" style="max-width:600px;">
+            <span class="close-modal" onclick="closeModal('remixerModal')">&times;</span>
+            <h2 style="color:var(--neon-blue); margin-bottom:15px;"><i class="fas fa-headphones"></i> DJ Remixer Account Portal</h2>
+            <div id="remixerAuthArea">
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <button type="button" class="btn btn-blue" style="flex:1; justify-content:center;" onclick="toggleRemixerAuth('login')">Login</button>
+                    <button type="button" class="btn btn-pink" style="flex:1; justify-content:center;" onclick="toggleRemixerAuth('register')">New Account बनाएं</button>
+                </div>
+                <div id="remixerLoginBox">
+                    <div class="form-group">
+                        <label>मोबाइल नंबर (+91 के साथ) *</label>
+                        <input type="tel" id="remLoginPhone" class="form-control" placeholder="+919876543210">
+                    </div>
+                    <div class="form-group">
+                        <label>पासवर्ड (Password) *</label>
+                        <input type="password" id="remLoginPass" class="form-control" placeholder="अपना पासवर्ड डालें">
+                    </div>
+                    <button type="button" class="btn btn-blue" style="width:100%; justify-content:center;" onclick="loginRemixer()">Login to Remixer Dashboard</button>
+                </div>
+                <div id="remixerRegisterBox" style="display:none;">
+                    <div class="form-group">
+                        <label>DJ Remixer का नाम (जैसे: DJ Rahul Ratangarh) *</label>
+                        <input type="text" id="remRegName" class="form-control" placeholder="आपका DJ नाम">
+                    </div>
+                    <div class="form-group">
+                        <label>मोबाइल नंबर (+91 के साथ OTP के लिए) *</label>
+                        <div class="otp-row">
+                            <input type="tel" id="remRegPhone" class="form-control" placeholder="+919876543210">
+                            <button type="button" class="btn btn-blue" onclick="sendOTP('remixer')">Send OTP</button>
+                        </div>
+                    </div>
+                    <div class="form-group" id="remixerOtpGroup" style="display:none;">
+                        <label>OTP दर्ज करें *</label>
+                        <div class="otp-row">
+                            <input type="text" id="remixerOtpInput" class="form-control" placeholder="6-digit OTP">
+                            <button type="button" class="btn btn-green" onclick="verifyOTP('remixer')">Verify</button>
+                        </div>
+                    </div>
+                    <p id="remixerVerifiedBadge" style="display:none; color:#25D366; font-size:0.85rem; margin-bottom:10px;"><i class="fas fa-check-circle"></i> Mobile Verified!</p>
+                    <div class="form-group">
+                        <label>नया पासवर्ड बनाएं (Create Password) *</label>
+                        <input type="password" id="remRegPass" class="form-control" placeholder="कम से कम 6 अक्षर">
+                    </div>
+                    <button type="button" class="btn btn-pink" style="width:100%; justify-content:center;" onclick="registerRemixer()">Create Account</button>
+                </div>
+            </div>
+
+            <div id="remixerDashArea" style="display:none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:#211442; padding:10px; border-radius:10px;">
+                    <div>
+                        <strong id="remDashTitle" style="color:var(--neon-gold);">Welcome DJ!</strong><br>
+                        <small id="remDashPhone" style="color:#aaa;"></small>
+                    </div>
+                    <button type="button" class="btn btn-pink" style="padding:5px 12px; font-size:0.8rem;" onclick="logoutRemixer()">Logout</button>
+                </div>
+                <div class="upload-box" style="margin-top:0; margin-bottom:20px; border-color:var(--neon-blue);">
+                    <h4 style="color:var(--neon-blue); margin-bottom:10px;">नया रीमिक्स गाना / वीडियो अपलोड करें</h4>
+                    <div class="form-group">
+                        <label>गाने का नाम (Song Name) *</label>
+                        <input type="text" id="remSongTitle" class="form-control" placeholder="जैसे: Marwadi Bass Boosted Mix">
+                    </div>
+                    <div class="form-group">
+                        <label>Audio (MP3) या Video (MP4) फाइल चुनें *</label>
+                        <input type="file" id="remSongFile" class="form-control" accept="audio/*,video/*">
+                    </div>
+                    <button type="button" class="btn btn-green" style="width:100%; justify-content:center;" onclick="uploadRemixerTrack()">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload Track
+                    </button>
+                    <p id="remTrackStatus" style="margin-top:8px; font-size:0.85rem; color:#00f3ff; text-align:center;"></p>
+                </div>
+                <h4 style="color:var(--neon-gold); margin-bottom:10px;">मेरे अपलोड किए गए गाने (My Saved Uploads)</h4>
+                <div id="remMyUploadsList"></div>
+            </div>
+        </div>
+    </div>
+              <div id="adminLoginModal" class="modal">
+        <div class="modal-content" style="max-width:450px;">
+            <span class="close-modal" onclick="closeModal('adminLoginModal')">&times;</span>
+            <h2 style="color:var(--neon-gold); margin-bottom:15px;"><i class="fas fa-lock"></i> Admin Login</h2>
+            <div class="form-group">
+                <label>Admin Password *</label>
+                <input type="password" id="adminPass" class="form-control" placeholder="Enter Admin Password">
+            </div>
+            <button type="button" class="btn btn-pink" style="width:100%; justify-content:center;" onclick="adminLogin()">Login to Dashboard</button>
+            <hr style="border-color:#333; margin:20px 0;">
+            <h4 style="color:var(--neon-blue); font-size:0.95rem; margin-bottom:10px;">Forgot Password / Direct Login</h4>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-blue" style="font-size:0.8rem; flex:1;" onclick="sendAdminResetEmail()">Registered Gmail Link</button>
+                <button type="button" class="btn btn-green" style="font-size:0.8rem; flex:1;" onclick="sendAdminForgotOTP()">Send Mobile OTP</button>
+            </div>
+            <div id="adminForgotOtpArea" style="display:none; margin-top:12px;">
+                <input type="text" id="adminForgotOtpCode" class="form-control" placeholder="Enter 6-digit OTP" style="margin-bottom:8px;">
+                <button type="button" class="btn btn-pink" style="width:100%; justify-content:center;" onclick="verifyAdminForgotOTP()">Verify OTP & Unlock</button>
+            </div>
+            <p id="adminLoginMsg" style="margin-top:10px; font-size:0.85rem; color:#ff6b6b;"></p>
+        </div>
+    </div>
+    <div id="adminDashboardModal" class="modal">
+        <div class="modal-content" style="max-width: 1000px;">
+            <span class="close-modal" onclick="closeModal('adminDashboardModal')">&times;</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:15px;">
+                <h2 style="color:var(--neon-gold);"><i class="fas fa-tachometer-alt"></i> Admin Control Dashboard</h2>
+                <button type="button" class="btn btn-pink" style="padding:5px 12px; font-size:0.8rem;" onclick="adminLogout()">Logout</button>
+            </div>
+
+            <div class="admin-nav">
+                <button type="button" class="active" onclick="switchAdminTab('tabCalendar', this)">📆 वार्षिक बुकिंग कैलेंडर</button>
+                <button type="button" onclick="switchAdminTab('tabBookings', this)">📅 All Bookings & Transfer</button>
+                <button type="button" onclick="switchAdminTab('tabPartners', this)">🤝 जुड़े हुए DJ साथी</button>
+                <button type="button" onclick="switchAdminTab('tabApprovals', this)">✅ Photo/Video & Remix Approvals</button>
+                <button type="button" onclick="switchAdminTab('tabMediaUpload', this)">📤 Direct Upload & Cover/Logo</button>
+                <button type="button" onclick="switchAdminTab('tabOperators', this)">🎧 VIP & Operator List</button>
+                <button type="button" onclick="switchAdminTab('tabReviewsAdmin', this)">⭐ Reviews Control</button>
+                <button type="button" onclick="switchAdminTab('tabSettings', this)">⚙️ Message & Password</button>
+            </div>
+
+            <div id="tabCalendar" class="admin-tab-content active">
+                <h3 style="color:var(--neon-blue); margin-bottom:10px;">वार्षिक बुकिंग कैलेंडर (Date-wise Bookings)</h3>
+                <div class="cal-controls">
+                    <select id="calYear" class="form-control" style="max-width:140px;" onchange="renderYearlyCalendar()">
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                    </select>
+                    <select id="calMonth" class="form-control" style="max-width:180px;" onchange="renderYearlyCalendar()">
+                        <option value="0">January (जनवरी)</option>
+                        <option value="1">February (फ़रवरी)</option>
+                        <option value="2">March (मार्च)</option>
+                        <option value="3">April (अप्रैल)</option>
+                        <option value="4">May (मई)</option>
+                        <option value="5">June (जून)</option>
+                        <option value="6">July (जुलाई)</option>
+                        <option value="7">August (अगस्त)</option>
+                        <option value="8">September (सितंबर)</option>
+                        <option value="9">October (अक्टूबर)</option>
+                        <option value="10">November (नवंबर)</option>
+                        <option value="11">December (दिसंबर)</option>
+                    </select>
+                </div>
+                <p style="font-size:0.8rem; color:#ccc; margin-bottom:10px;">🔴 गुलाबी रंग की तारीखों पर बुकिंग दर्ज है। किसी भी तारीख पर क्लिक करके उस दिन की बुकिंग देखें:</p>
+                <div class="cal-grid" id="calendarGrid"></div>
+                <div id="calendarDayDetails" style="margin-top:15px; background:#211442; padding:12px; border-radius:10px; display:none;"></div>
+            </div>
+
+            <div id="tabBookings" class="admin-tab-content">
+                <h3 style="color:var(--neon-blue); margin-bottom:10px;">Verified Customer Bookings (Transfer Extra Booking to Partner)</h3>
+                <div style="overflow-x:auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Customer Name</th>
+                                <th>Mobile (Verified)</th>
+                                <th>Package</th>
+                                <th>Date & Time</th>
+                                <th>Address</th>
+                                <th>Transfer / Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminBookingsList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="tabPartners" class="admin-tab-content">
+                <h3 style="color:var(--neon-gold); margin-bottom:10px;">हमसे जुड़े हुए DJ एवं Floor Sound साथी (सामान की लिस्ट सहित)</h3>
+                <div style="overflow-x:auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Owner Name</th>
+                                <th>DJ / Sound Name</th>
+                                <th>City / Village</th>
+                                <th>Mobile (Verified)</th>
+                                <th>सामान की लिस्ट (Equipment & Quality)</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminPartnersList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="tabApprovals" class="admin-tab-content">
+                <h3 style="color:var(--neon-blue); margin-bottom:10px;">Customer Gallery Uploads (Approve / Decline / Delete)</h3>
+                <div id="adminGalleryList" class="media-grid" style="margin-bottom:25px;"></div>
+                <h3 style="color:var(--neon-gold); margin-bottom:10px;">DJ Remixer Uploads (With Remixer Mobile)</h3>
+                <div id="adminRemixList" class="media-grid"></div>
+            </div>
+
+            <div id="tabMediaUpload" class="admin-tab-content">
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:15px;">
+                    <div class="upload-box" style="margin:0;">
+                        <h4 style="color:var(--neon-gold); margin-bottom:10px;">1. Change Logo Photo</h4>
+                        <input type="file" id="adminLogoFile" class="form-control" accept="image/*" style="margin-bottom:10px;">
+                        <button type="button" class="btn btn-blue" onclick="adminUpdateLogo()">Update Logo</button>
+                    </div>
+                    <div class="upload-box" style="margin:0;">
+                        <h4 style="color:var(--neon-gold); margin-bottom:10px;">2. Add Cover Slider Photo (Multiple)</h4>
+                        <input type="text" id="adminSlideTitle" class="form-control" placeholder="Slide Heading" style="margin-bottom:8px;">
+                        <input type="file" id="adminCoverFile" class="form-control" accept="image/*" style="margin-bottom:10px;">
+                        <button type="button" class="btn btn-pink" onclick="adminAddCoverSlide()">Add Cover Photo</button>
+                        <div id="adminSlidesList" style="margin-top:10px; font-size:0.8rem;"></div>
+                    </div>
+                    <div class="upload-box" style="margin:0;">
+                        <h4 style="color:var(--neon-gold); margin-bottom:10px;">3. Direct Gallery Photo/Video Upload</h4>
+                        <input type="text" id="adminDirectCaption" class="form-control" placeholder="Caption" style="margin-bottom:8px;">
+                        <input type="file" id="adminDirectFile" class="form-control" accept="image/*,video/*" style="margin-bottom:10px;">
+                        <button type="button" class="btn btn-green" onclick="adminDirectUpload()">Publish Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tabOperators" class="admin-tab-content">
+                <h3 style="color:var(--neon-blue); margin-bottom:10px;">VIP & Member DJ Operator Directory (Private Admin List)</h3>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:15px;">
+                    <input type="text" id="opNewName" class="form-control" placeholder="Operator / VIP Name" style="flex:1;">
+                    <input type="tel" id="opNewPhone" class="form-control" placeholder="Mobile Number" style="flex:1;">
+                    <input type="text" id="opNewRole" class="form-control" placeholder="Role (e.g. Sound Operator / VIP)" style="flex:1;">
+                    <button type="button" class="btn btn-green" onclick="addOperator()">+ Add Member</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Name</th><th>Mobile Number</th><th>Role</th><th>Action</th></tr>
+                    </thead>
+                    <tbody id="adminOperatorsList"></tbody>
+                </table>
+            </div>
+
+            <div id="tabReviewsAdmin" class="admin-tab-content">
+                <h3 style="color:var(--neon-blue); margin-bottom:10px;">Manage Customer Reviews (Edit / Delete)</h3>
+                <div id="adminReviewsContainer"></div>
+            </div>
+
+            <div id="tabSettings" class="admin-tab-content">
+                <div class="upload-box" style="margin-bottom:20px;">
+                    <h4 style="color:var(--neon-gold); margin-bottom:10px;">ग्राहकों को बधाई या विशेष संदेश दें (Top Banner Message)</h4>
+                    <input type="text" id="adminBannerInput" class="form-control" placeholder="यहाँ बधाई संदेश लिखें..." style="margin-bottom:10px;">
+                    <button type="button" class="btn btn-green" onclick="updateWelcomeBanner()">Update Message</button>
+                </div>
+                <div class="upload-box">
+                    <h4 style="color:var(--neon-pink); margin-bottom:10px;">Admin Password Change</h4>
+                    <input type="password" id="newAdminPassword" class="form-control" placeholder="Enter New Password (min 6 chars)" style="margin-bottom:10px;">
+                    <button type="button" class="btn btn-pink" onclick="changeAdminPassword()">Change Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+    <script>
+            var firebaseConfig = {
+            apiKey: "AIzaSyCGGCmFWy-0NQdVfj7gAvC9aZzFxbFvy7Q",
+                        authDomain: "fouji-dj-events" + ".firebaseapp.com",
+                        databaseURL: "https://" + "fouji-dj-events-default-rtdb" + ".firebaseio.com",
+            projectId: "fouji-dj-events",
+            storageBucket: "fouji-dj-events.firebasestorage.app",
+            messagingSenderId: "676619722014",
+            appId: "1:676619722014:web:93bb8d1691492f88b97d0f",
+            measurementId: "G-KG5QGWV2MF"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        var auth = firebase.auth();
+        var db = firebase.database();
+        var storage = firebase.storage();
+
+        var FIXED_ADMIN_EMAIL = "indrajprajapat@gmail.com";
+        var FIXED_ADMIN_PHONE = "+919001181847";
+
+        function openModal(id) {
+            var el = document.getElementById(id);
+            if (el) el.style.display = 'block';
+        }
+        function closeModal(id) {
+            var el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        }
+
+        if (auth.isSignInWithEmailLink(window.location.href)) {
+            var savedEmail = window.localStorage.getItem('emailForSignIn') || FIXED_ADMIN_EMAIL;
+            auth.signInWithEmailLink(savedEmail, window.location.href)
+                .then(function() {
+                    window.localStorage.removeItem('emailForSignIn');
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    alert("Gmail Link Verified! Admin Dashboard khul raha hai.");
+                    openModal('adminDashboardModal');
+                })
+                .catch(function(error) { alert("Email Link Error: " + error.message); });
+        }
+
+        setInterval(function() {
+            var now = new Date();
+            var clockEl = document.getElementById('liveClock');
+            if (clockEl) {
+                clockEl.innerHTML = '<i class="far fa-clock"></i> ' + now.toLocaleDateString('hi-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) + ' | ' + now.toLocaleTimeString('en-IN');
+            }
+        }, 1000);
+
+        var packagesData = [
+            {
+                id: "basic",
+                name: "Basic DJ Package",
+                img: "https://images.unsplash.com/photo-1506199158893-2c7a3f4f3f3b?auto=format&fit=crop&w=1200&q=80",
+                shortDesc: "Single Side Truss, Top, Bass, Par Light aur Patta lighting setup.",
+                fullDesc: "Chhote samaroh, janmdin aur haldi/mehndi ke liye best package. Ismein shamil hai: Single Side Truss, High-Power Top Speakers, Deep Bass, Colorful Par Lights aur LED Patta Lighting."
+            },
+            {
+                id: "premium",
+                name: "Premium DJ Package",
+                img: "https://images.unsplash.com/photo-1506199158893-2c7a3f4f3f3b?auto=format&fit=crop&w=1200&q=80",
+                shortDesc: "Four Side Truss, Top, Bass, Line Array Speakers, Par, Sharpy & Blinder Light.",
+                fullDesc: "Shandar shadi aur reception party ke liye concert style setup. Ismein shamil hai: Four Side Heavy Truss, Top & Bass Speakers, Line Array Sound System, Par Lights, Moving Sharpy Lights aur Blinder Lights."
+            },
+            {
+                id: "royal",
+                name: "Royal Wedding Package",
+                img: "https://images.unsplash.com/photo-1506199158893-2c7a3f4f3f3b?auto=format&fit=crop&w=1200&q=80",
+                shortDesc: "Full Size Four Side Truss, Line Array, LED Wall, Pyro, CO2 Jet & Paper Machine.",
+                fullDesc: "Shahi shadi (Royal Wedding) ka sabse grand aur dhamakedar package! Ismein shamil hai: Full Size Four Side Truss, Top & Bass, Line Array Speakers, Par Light, Sharpy Light, Blinder Light, Giant LED Wall, Cold Pyro, CO2 Jet aur Paper Blast Machine."
+            },
+            {
+                id: "pickup",
+                name: "Pickup DJ Package",
+                img: "https://images.unsplash.com/photo-1506199158893-2c7a3f4f3f3b?auto=format&fit=crop&w=1200&q=80",
+                shortDesc: "Barat, Rally aur Shobhayatra ke liye heavy sound Pickup DJ setup.",
+                fullDesc: "Barat aur julus ki shaan badhane ke liye heavy bass aur clear sound wala mobile Pickup DJ setup."
+            },
+            {
+                id: "ghodi",
+                name: "Shahi Ghodi (Wedding Horse)",
+                img: "https://images.unsplash.com/photo-1506199158893-2c7a3f4f3f3b?auto=format&fit=crop&w=1200&q=80",
+                shortDesc: "Dulhe ke liye saji hui shahi safed Ghodi aur chhatri.",
+                fullDesc: "Shadi mein dulhe ki shahi entry ke liye sundar sajawat aur lighting chhatri ke saath Shahi Ghodi uplabdh hai."
+            }
+        ];
+
+        var pkgContainer = document.getElementById('packagesContainer');
+        if (pkgContainer) {
+            pkgContainer.innerHTML = "";
+            packagesData.forEach(function(pkg) {
+                pkgContainer.innerHTML += '<div class="card">' +
+                    '<img src="' + pkg.img + '" class="card-img" onclick="openPackageDetails(\'' + pkg.id + '\')" alt="' + pkg.name + '">' +
+                    '<div class="card-body">' +
+                    '<h3 class="card-title">' + pkg.name + '</h3>' +
+                    '<p class="card-desc">' + pkg.shortDesc + '</p>' +
+                    '<div class="card-actions">' +
+                    '<button type="button" class="btn btn-blue" onclick="openPackageDetails(\'' + pkg.id + '\')"><i class="fas fa-info-circle"></i> More Details</button>' +
+                    '<button type="button" class="btn btn-pink" onclick="openBooking(\'' + pkg.name + '\')"><i class="fas fa-calendar-check"></i> Booking Now</button>' +
+                    '</div></div></div>';
+            });
+        }
+
+        function openPackageDetails(id) {
+            var pkg = packagesData.find(function(p) { return p.id === id; });
+            if (!pkg) return;
+            document.getElementById('detTitle').innerText = pkg.name;
+            document.getElementById('detImg').src = pkg.img;
+            document.getElementById('detDesc').innerText = pkg.fullDesc;
+            document.getElementById('detBookBtn').onclick = function() {
+                closeModal('detailsModal');
+                openBooking(pkg.name);
+            };
+            openModal('detailsModal');
+        }
+
+        function openBooking(pkgName) {
+            document.getElementById('bookPackage').value = pkgName;
+            openModal('bookingModal');
+        }
+
+        var slides = [
+            { img: "https://images.unsplash.com/photo-1506199158893-2c7a3f4f3f3b?auto=format&fit=crop&w=1200&q=80", title: "Dhamakedar Sound aur Rangeen Lighting ka Sangam" },
+            { img: "https://images.unsplash.com/photo-1506199158893-2c7a3f4f3f3b?auto=format&fit=crop&w=1200&q=80", title: "Ratangarh ka No. 1 Wedding & Event DJ" },
+            { img: "https://images.unsplash.com/photo-1506199158893-2c7a3f4f3f3b?auto=format&fit=crop&w=1200&q=80", title: "LED Wall, Pyro, CO2 Jet & Concert Truss" }
+        ];
+        var currentSlide = 0;
+
+        function renderSlider() {
+            var sliderEl = document.getElementById('heroSlider');
+            if (!sliderEl) return;
+            var html = "";
+            slides.forEach(function(s, idx) {
+                var activeClass = idx === 0 ? "active" : "";
+                html += '<div class="slide ' + activeClass + '" style="background-image: url(\'' + s.img + '\')">' +
+                    '<div class="slide-overlay">' +
+                    '<h2>' + s.title + '</h2>' +
+                    '<div class="quick-cta">' +
+                    '<button type="button" class="btn btn-pink" onclick="openBooking(\'Custom DJ Setup\')"><i class="fas fa-calendar-alt"></i> Book DJ Now</button>' +
+                    '<a href="tel:+917023370739" class="btn btn-blue"><i class="fas fa-phone"></i> 7023370739</a>' +
+                    '<a href="https://wa.me/919001181847" target="_blank" class="btn btn-green"><i class="fab fa-whatsapp"></i> WhatsApp</a>' +
+                    '</div></div></div>';
+            });
+            sliderEl.innerHTML = html;
+        }
+        renderSlider();
+
+        setInterval(function() {
+            var slideEls = document.querySelectorAll('.slide');
+            if (slideEls.length > 1) {
+                slideEls[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slideEls.length;
+                slideEls[currentSlide].classList.add('active');
+            }
+        }, 4000);
+
+        db.ref('siteSettings').on('value', function(snap) {
+            var data = snap.val();
+            if (data) {
+                if (data.logoUrl) document.getElementById('siteLogo').src = data.logoUrl;
+                if (data.welcomeBanner) document.getElementById('adminMessageBanner').innerText = data.welcomeBanner;
+                if (data.coverSlides) {
+                    slides = Object.values(data.coverSlides);
+                    currentSlide = 0;
+                    renderSlider();
+                    renderAdminSlides(data.coverSlides);
+                }
+            }
+        });
+        var confirmationResults = {};
+        var verifiedPhones = { book: null, partner: null, remixer: null };
+
+        function setupRecaptcha() {
+            if (!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
+            }
+        }
+
+        function sendOTP(type) {
+            var phoneIdMap = { book: 'bookPhone', partner: 'partPhone', remixer: 'remRegPhone' };
+            var otpGroupMap = { book: 'bookOtpGroup', partner: 'partnerOtpGroup', remixer: 'remixerOtpGroup' };
+            var phoneInput = document.getElementById(phoneIdMap[type]).value.trim();
+            if (!phoneInput.startsWith('+')) phoneInput = '+91' + phoneInput;
+            if (phoneInput.length < 13) return alert("Kripya sahi 10 ankon ka mobile number darj karein.");
+
+            setupRecaptcha();
+            auth.signInWithPhoneNumber(phoneInput, window.recaptchaVerifier)
+                .then(function(confirmationResult) {
+                    confirmationResults[type] = confirmationResult;
+                    document.getElementById(otpGroupMap[type]).style.display = 'block';
+                    alert("OTP aapke mobile number " + phoneInput + " par bhej diya gaya hai!");
+                })
+                .catch(function(err) {
+                    alert("OTP Error: " + err.message + "\n(Zaroori: Real SMS OTP ke liye website ko live link par kholein aur Firebase mein Phone Auth ON rakhein)");
+                });
+        }
+
+        function verifyOTP(type) {
+            var otpInputMap = { book: 'bookOtpInput', partner: 'partnerOtpInput', remixer: 'remixerOtpInput' };
+            var badgeMap = { book: 'bookVerifiedBadge', partner: 'partnerVerifiedBadge', remixer: 'remixerVerifiedBadge' };
+            var code = document.getElementById(otpInputMap[type]).value.trim();
+            if (!code) return alert("Kripya OTP darj karein.");
+            if (!confirmationResults[type]) return alert("Pehle Send OTP button par click karein.");
+
+            confirmationResults[type].confirm(code)
+                .then(function(res) {
+                    verifiedPhones[type] = res.user.phoneNumber;
+                    document.getElementById(badgeMap[type]).style.display = 'block';
+                    alert("Mobile number safaltapurvak verify ho gaya!");
+                })
+                .catch(function() {
+                    alert("Galat OTP! Kripya dobara koshish karein.");
+                });
+        }
+
+        var allBookingsData = {};
+        var allPartnersData = {};
+
+        function submitBooking() {
+            var pkg = document.getElementById('bookPackage').value;
+            var name = document.getElementById('bookName').value.trim();
+            var date = document.getElementById('bookDate').value;
+            var startTime = document.getElementById('bookStartTime').value;
+            var endTime = document.getElementById('bookEndTime').value;
+            var address = document.getElementById('bookAddress').value.trim();
+
+            if (!name || !date || !startTime || !endTime || !address) {
+                return alert("Sabhi jankari (Naam, Date, Kitne baje se kitne baje tak aur Address) bharna zaroori hai!");
+            }
+            if (!verifiedPhones.book) {
+                return alert("Kripya pehle apna mobile number OTP se verify karein!");
+            }
+
+            db.ref('bookings').push({
+                package: pkg,
+                name: name,
+                date: date,
+                startTime: startTime,
+                endTime: endTime,
+                address: address,
+                phone: verifiedPhones.book,
+                createdAt: new Date().toLocaleString('hi-IN')
+            }).then(function() {
+                alert("Aapki booking safaltapurvak darj kar li gayi hai! Hamari team jald hi aapse sampark karegi.");
+                closeModal('bookingModal');
+            }).catch(function(err) {
+                alert("Booking Error: " + err.message);
+            });
+        }
+
+        function submitPartnerForm() {
+            var ownerName = document.getElementById('partOwnerName').value.trim();
+            var djName = document.getElementById('partDjName').value.trim();
+            var city = document.getElementById('partCity').value.trim();
+            var equipment = document.getElementById('partEquipment').value.trim();
+
+            if (!ownerName || !djName || !city) {
+                return alert("Kripya apna naam, DJ/Sound ka naam aur shahar/gaanv ka naam bharein.");
+            }
+            if (!verifiedPhones.partner) {
+                return alert("Kripya pehle apna mobile number OTP se verify karein!");
+            }
+
+            db.ref('partners').push({
+                ownerName: ownerName,
+                djName: djName,
+                city: city,
+                phone: verifiedPhones.partner,
+                equipment: equipment || "Not specified",
+                joinedAt: new Date().toLocaleDateString('hi-IN')
+            }).then(function() {
+                alert("Badhai ho! Aapki details Fouji DJ Network mein jud gayi hain.");
+                document.getElementById('partOwnerName').value = "";
+                document.getElementById('partDjName').value = "";
+                document.getElementById('partCity').value = "";
+                document.getElementById('partEquipment').value = "";
+            }).catch(function(err) {
+                alert("Error: " + err.message);
+            });
+        }
+
+        var currentRemixer = null;
+
+        function toggleRemixerAuth(mode) {
+            document.getElementById('remixerLoginBox').style.display = mode === 'login' ? 'block' : 'none';
+            document.getElementById('remixerRegisterBox').style.display = mode === 'register' ? 'block' : 'none';
+        }
+
+        function registerRemixer() {
+            var name = document.getElementById('remRegName').value.trim();
+            var pass = document.getElementById('remRegPass').value.trim();
+            if (!name || pass.length < 6) return alert("Kripya DJ naam aur kam se kam 6 aksharon ka password dalein.");
+            if (!verifiedPhones.remixer) return alert("Kripya pehle apna mobile number OTP se verify karein!");
+
+            var cleanPhoneKey = verifiedPhones.remixer.replace('+', '');
+            db.ref('remixersAccount/' + cleanPhoneKey).set({
+                name: name,
+                phone: verifiedPhones.remixer,
+                password: pass
+            }).then(function() {
+                currentRemixer = { name: name, phone: verifiedPhones.remixer, key: cleanPhoneKey };
+                showRemixerDashboard();
+                alert("Remixer Account ban gaya hai!");
+            });
+        }
+
+        function loginRemixer() {
+            var phone = document.getElementById('remLoginPhone').value.trim();
+            var pass = document.getElementById('remLoginPass').value.trim();
+            if (!phone.startsWith('+')) phone = '+91' + phone;
+            var cleanPhoneKey = phone.replace('+', '');
+
+            db.ref('remixersAccount/' + cleanPhoneKey).once('value').then(function(snap) {
+                var acc = snap.val();
+                if (!acc) return alert("Is mobile number se koi Remixer Account nahi bana hai. Kripya New Account banayein.");
+                if (acc.password !== pass) return alert("Galat password!");
+                currentRemixer = { name: acc.name, phone: acc.phone, key: cleanPhoneKey };
+                showRemixerDashboard();
+            });
+        }
+
+        function showRemixerDashboard() {
+            document.getElementById('remixerAuthArea').style.display = 'none';
+            document.getElementById('remixerDashArea').style.display = 'block';
+            document.getElementById('remDashTitle').innerText = "Welcome, " + currentRemixer.name;
+            document.getElementById('remDashPhone').innerText = "Verified Mobile: " + currentRemixer.phone;
+            loadMyRemixerUploads();
+        }
+
+        function logoutRemixer() {
+            currentRemixer = null;
+            document.getElementById('remixerAuthArea').style.display = 'block';
+            document.getElementById('remixerDashArea').style.display = 'none';
+        }
+
+        function uploadRemixerTrack() {
+            if (!currentRemixer) return alert("Pehle login karein.");
+            var songName = document.getElementById('remSongTitle').value.trim();
+            var fileInput = document.getElementById('remSongFile');
+            var file = fileInput.files.item(0);
+            var status = document.getElementById('remTrackStatus');
+
+            if (!songName || !file) return alert("Gaane ka naam aur Audio/Video file chunein.");
+            status.innerText = "Uploading Track... Kripya pratiksha karein...";
+
+            var fileRef = storage.ref('remixes/' + Date.now() + '_' + file.name);
+            fileRef.put(file).then(function() { return fileRef.getDownloadURL(); })
+                .then(function(url) {
+                    return db.ref('remixes').push({
+                        opName: currentRemixer.name,
+                        songName: songName,
+                        phone: currentRemixer.phone,
+                        ownerKey: currentRemixer.key,
+                        url: url,
+                        type: file.type.startsWith('video') ? 'video' : 'audio',
+                        approved: false,
+                        timestamp: Date.now()
+                    });
+                })
+                .then(function() {
+                    status.innerText = "Track upload ho gaya! Admin approval ke baad sabko dikhega.";
+                    document.getElementById('remSongTitle').value = "";
+                    fileInput.value = "";
+                })
+                .catch(function(err) {
+                    status.innerText = "";
+                    alert("Upload Error: " + err.message);
+                });
+        }
+        function loadMyRemixerUploads() {
+            if (!currentRemixer) return;
+            db.ref('remixes').on('value', function(snap) {
+                var listEl = document.getElementById('remMyUploadsList');
+                if (!listEl || !currentRemixer) return;
+                listEl.innerHTML = "";
+                var data = snap.val();
+                if (!data) return;
+                Object.keys(data).forEach(function(id) {
+                    var item = data[id];
+                    if (item.ownerKey === currentRemixer.key) {
+                        var badge = item.approved ? '<span class="badge-verified">Approved & Live</span>' : '<span class="badge-pending">Pending Admin Approval</span>';
+                        listEl.innerHTML += '<div style="background:#1c1138; padding:10px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">' +
+                            '<div><strong>' + item.songName + '</strong><br>' + badge + '</div>' +
+                            '<button type="button" class="btn btn-pink" style="padding:4px 10px; font-size:0.75rem;" onclick="deleteItem(\'remixes\',\'' + id + '\')">Delete</button></div>';
+                    }
+                });
+            });
+        }
+
+        function uploadCustomerMedia() {
+            var name = document.getElementById('custMediaName').value.trim();
+            var fileInput = document.getElementById('custMediaFile');
+            var file = fileInput.files.item(0);
+            var caption = document.getElementById('custMediaCaption').value.trim();
+            var status = document.getElementById('custUploadStatus');
+
+            if (!name || !file) return alert("Kripya apna naam aur photo/video chunein.");
+            status.innerText = "Uploading... Kripya pratiksha karein...";
+
+            var fileRef = storage.ref('gallery/' + Date.now() + '_' + file.name);
+            fileRef.put(file).then(function() { return fileRef.getDownloadURL(); })
+                .then(function(url) {
+                    return db.ref('gallery').push({
+                        name: name,
+                        url: url,
+                        caption: caption,
+                        type: file.type.startsWith('video') ? 'video' : 'image',
+                        approved: false,
+                        timestamp: Date.now()
+                    });
+                })
+                .then(function() {
+                    status.innerText = "Upload Safal! Admin dwara Approve hone ke baad yeh gallery mein dikhega.";
+                    fileInput.value = "";
+                })
+                .catch(function(err) {
+                    status.innerText = "";
+                    alert("Upload Error: " + err.message);
+                });
+        }
+
+                        var defaultGalleryItems = [
+            { name: "Fouji DJ Events", caption: "Grand Wedding Truss & Lighting Setup", url: "https://unsplash.com", type: "image" },
+            { name: "Fouji DJ Ratangarh", caption: "Live Concert Sound & Sharpy Lights", url: "https://unsplash.com", type: "image" },
+            { name: "Royal Entry Setup", caption: "LED Wall, Cold Pyro & CO2 Jet Show", url: "https://unsplash.com", type: "image" }
+        ];
+
+        function renderDefaultGallery(container) {
+            container.innerHTML = "";
+            defaultGalleryItems.forEach(function(item) {
+                container.innerHTML += '<div class="media-item">' +
+                    '<img src="' + item.url + '" onclick="window.open(\'' + item.url + '\',\'_blank\')" alt="' + item.caption + '">' +
+                    '<div class="media-info"><strong>' + item.name + '</strong><p>' + item.caption + '</p></div></div>';
+            });
+        }
+
+        renderDefaultGallery(document.getElementById('galleryContainer'));
+
+        db.ref('gallery').on('value', function(snap) {
+            var container = document.getElementById('galleryContainer');
+            var adminList = document.getElementById('adminGalleryList');
+            adminList.innerHTML = "";
+            var data = snap.val();
+            var hasApproved = false;
+
+            if (data) {
+                var liveHtml = "";
+                Object.keys(data).forEach(function(id) {
+                    var item = data[id];
+                    var mediaTag = item.type === 'video'
+                        ? '<video src="' + item.url + '" controls></video>'
+                        : '<img src="' + item.url + '" onclick="window.open(\'' + item.url + '\',\'_blank\')">';
+
+                    if (item.approved) {
+                        hasApproved = true;
+                        liveHtml += '<div class="media-item">' + mediaTag +
+                            '<div class="media-info"><strong>' + item.name + '</strong><p>' + (item.caption || '') + '</p></div></div>';
+                    }
+
+                    var approveBtn = !item.approved
+                        ? '<button type="button" class="btn btn-green" style="padding:4px 8px; font-size:0.75rem;" onclick="approveItem(\'gallery\',\'' + id + '\')">Approve</button>'
+                        : '';
+
+                    adminList.innerHTML += '<div class="media-item">' + mediaTag +
+                        '<div class="media-info"><strong>By: ' + item.name + '</strong> (' + (item.approved ? 'Live' : 'Pending') + ')' +
+                        '<div style="display:flex; gap:5px; margin-top:8px;">' + approveBtn +
+                        '<button type="button" class="btn btn-pink" style="padding:4px 8px; font-size:0.75rem;" onclick="deleteItem(\'gallery\',\'' + id + '\')">Decline/Delete</button>' +
+                        '</div></div></div>';
+                });
+
+                if (hasApproved) {
+                    container.innerHTML = liveHtml;
+                } else {
+                    renderDefaultGallery(container);
+                }
+            } else {
+                renderDefaultGallery(container);
+            }
+        });
+
+
+        db.ref('remixes').on('value', function(snap) {
+            var container = document.getElementById('remixContainer');
+            var adminList = document.getElementById('adminRemixList');
+            container.innerHTML = "";
+            adminList.innerHTML = "";
+            var data = snap.val();
+            if (!data) {
+                container.innerHTML = "<p style='color:#aaa;'>Abhi koi DJ Remix uplabdh nahi hai.</p>";
+                return;
+            }
+
+            Object.keys(data).forEach(function(id) {
+                var item = data[id];
+                var player = item.type === 'video'
+                    ? '<video src="' + item.url + '" controls style="width:100%; height:180px;"></video>'
+                    : '<audio src="' + item.url + '" controls style="width:100%; margin-top:10px;"></audio>';
+
+                if (item.approved) {
+                    container.innerHTML += '<div class="media-item" style="padding:15px;">' +
+                        '<h4 style="color:var(--neon-gold);">' + item.songName + '</h4>' +
+                        '<p style="font-size:0.8rem; color:#00f3ff;">Remixed by: ' + item.opName + '</p>' + player +
+                        '<a href="' + item.url + '" download target="_blank" class="btn btn-blue" style="margin-top:10px; width:100%; justify-content:center; font-size:0.8rem;"><i class="fas fa-download"></i> Download Track</a></div>';
+                }
+
+                var approveBtn = !item.approved
+                    ? '<button type="button" class="btn btn-green" style="padding:4px 8px; font-size:0.75rem;" onclick="approveItem(\'remixes\',\'' + id + '\')">Approve</button>'
+                    : '';
+
+                adminList.innerHTML += '<div class="media-item" style="padding:12px;">' +
+                    '<h4>' + item.songName + '</h4>' +
+                    '<p style="font-size:0.8rem;">Remixer: ' + item.opName + ' | ' + item.phone + '</p>' + player +
+                    '<div style="display:flex; gap:5px; margin-top:8px;">' + approveBtn +
+                    '<button type="button" class="btn btn-pink" style="padding:4px 8px; font-size:0.75rem;" onclick="deleteItem(\'remixes\',\'' + id + '\')">Decline/Delete</button>' +
+                    '</div></div>';
+            });
+        });
+
+        function submitReview() {
+            var name = document.getElementById('revName').value.trim();
+            var rating = parseInt(document.getElementById('revRating').value, 10);
+            var comment = document.getElementById('revComment').value.trim();
+            if (!name || !comment) return alert("Naam aur comment likhna anivarya hai.");
+
+            db.ref('reviews').push({
+                name: name,
+                rating: rating,
+                comment: comment,
+                likes: 0,
+                replies: {}
+            }).then(function() {
+                document.getElementById('revName').value = "";
+                document.getElementById('revComment').value = "";
+                alert("Aapka review submit ho gaya hai!");
+            }).catch(function(err) {
+                alert("Review Error: " + err.message);
+            });
+        }
+
+        function likeReview(id, currentLikes) {
+            db.ref('reviews/' + id).update({ likes: (currentLikes || 0) + 1 });
+        }
+
+        function replyReview(id) {
+            var replyText = prompt("Apna Reply likhein:");
+            if (replyText && replyText.trim()) {
+                db.ref('reviews/' + id + '/replies').push({
+                    text: replyText.trim(),
+                    date: new Date().toLocaleDateString('hi-IN')
+                });
+            }
+        }
+
+        db.ref('reviews').on('value', function(snap) {
+            var container = document.getElementById('reviewsContainer');
+            var adminContainer = document.getElementById('adminReviewsContainer');
+            container.innerHTML = "";
+            adminContainer.innerHTML = "";
+            var data = snap.val();
+            if (!data) return;
+
+            Object.keys(data).forEach(function(id) {
+                var rev = data[id];
+                var stars = "⭐".repeat(rev.rating || 5);
+                var repliesHtml = "";
+                if (rev.replies) {
+                    Object.values(rev.replies).forEach(function(r) {
+                        repliesHtml += '<div style="margin-top:5px; color:#ccc;">↳ ' + r.text + ' <small style="color:#777;">(' + r.date + ')</small></div>';
+                    });
+                }
+
+                container.innerHTML += '<div class="review-card">' +
+                    '<div style="display:flex; justify-content:space-between;"><strong>' + rev.name + '</strong><span class="stars">' + stars + '</span></div>' +
+                    '<p style="margin-top:8px; color:#eee;">' + rev.comment + '</p>' +
+                    '<div class="social-actions">' +
+                    '<button type="button" onclick="likeReview(\'' + id + '\', ' + (rev.likes || 0) + ')"><i class="fas fa-thumbs-up"></i> Like (' + (rev.likes || 0) + ')</button>' +
+                    '<button type="button" onclick="replyReview(\'' + id + '\')"><i class="fas fa-reply"></i> Reply</button>' +
+                    '</div><div class="replies-box">' + repliesHtml + '</div></div>';
+                adminContainer.innerHTML += '<div class="review-card">' +
+                    '<strong>' + rev.name + '</strong> (' + stars + '): <p>' + rev.comment + '</p>' +
+                    '<div style="margin-top:8px; display:flex; gap:8px;">' +
+                    '<button type="button" class="btn btn-blue" style="padding:4px 10px; font-size:0.75rem;" onclick="editReview(\'' + id + '\')">Edit</button>' +
+                    '<button type="button" class="btn btn-pink" style="padding:4px 10px; font-size:0.75rem;" onclick="deleteItem(\'reviews\',\'' + id + '\')">Delete</button>' +
+                    '</div></div>';
+            });
+        });
+
+        function adminLogin() {
+            var pass = document.getElementById('adminPass').value;
+            if (!pass) return alert("Kripya Admin Password darj karein.");
+            auth.signInWithEmailAndPassword(FIXED_ADMIN_EMAIL, pass)
+                .then(function() {
+                    closeModal('adminLoginModal');
+                    openModal('adminDashboardModal');
+                    renderYearlyCalendar();
+                })
+                .catch(function(err) {
+                    document.getElementById('adminLoginMsg').innerText = "Galat password ya Firebase mein user nahi bana hai! Error: " + err.message;
+                });
+        }
+
+                function getMaskedPhone(phone) {
+            var clean = String(phone || "");
+            return "******" + clean.slice(-4);
+        }
+
+        function sendAdminResetEmail() {
+            var actionCodeSettings = {
+                url: window.location.origin + window.location.pathname,
+                handleCodeInApp: true
+            };
+            auth.sendSignInLinkToEmail(FIXED_ADMIN_EMAIL, actionCodeSettings)
+                .then(function() {
+                    window.localStorage.setItem('emailForSignIn', FIXED_ADMIN_EMAIL);
+                    return auth.sendPasswordResetEmail(FIXED_ADMIN_EMAIL);
+                })
+                .then(function() {
+                    alert("Aapki registered Gmail par Direct Login Link aur Password Reset Link bhej diya gaya hai!");
+                })
+                .catch(function(err) {
+                    alert("Email Error: " + err.message);
+                });
+        }
+
+        var adminForgotConfirm = null;
+        function sendAdminForgotOTP() {
+            setupRecaptcha();
+            auth.signInWithPhoneNumber(FIXED_ADMIN_PHONE, window.recaptchaVerifier)
+                .then(function(confirmationResult) {
+                    adminForgotConfirm = confirmationResult;
+                    document.getElementById('adminForgotOtpArea').style.display = 'block';
+                    alert("OTP aapke registered mobile number (" + getMaskedPhone(FIXED_ADMIN_PHONE) + ") par bhej diya gaya hai!");
+                })
+                .catch(function(err) {
+                    alert("OTP Error: " + err.message);
+                });
+        }
+
+        function verifyAdminForgotOTP() {
+            var code = document.getElementById('adminForgotOtpCode').value.trim();
+            if (!code) return alert("OTP darj karein.");
+            adminForgotConfirm.confirm(code)
+                .then(function() {
+                    closeModal('adminLoginModal');
+                    openModal('adminDashboardModal');
+                    renderYearlyCalendar();
+                    alert("OTP Verified! Ab aap Settings tab mein jakar naya password set kar sakte hain.");
+                })
+                .catch(function() {
+                    alert("Galat OTP!");
+                });
+        }
+
+        function changeAdminPassword() {
+            var newPass = document.getElementById('newAdminPassword').value.trim();
+            if (newPass.length < 6) return alert("Password kam se kam 6 aksharon ka hona chahiye.");
+            if (auth.currentUser) {
+                auth.currentUser.updatePassword(newPass)
+                    .then(function() { alert("Admin Password safaltapurvak badal diya gaya hai!"); })
+                    .catch(function() { alert("Suraksha karanon se kripya ek baar dobara Email/Password se Login karke password badlein."); });
+            }
+        }
+
+        function adminLogout() {
+            auth.signOut().then(function() { closeModal('adminDashboardModal'); });
+        }
+
+        function switchAdminTab(tabId, btn) {
+            document.querySelectorAll('.admin-tab-content').forEach(function(el) { el.classList.remove('active'); });
+            document.querySelectorAll('.admin-nav button').forEach(function(el) { el.classList.remove('active'); });
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+            if (tabId === 'tabCalendar') renderYearlyCalendar();
+        }
+
+        function approveItem(folder, id) {
+            db.ref(folder + '/' + id).update({ approved: true });
+        }
+
+        function deleteItem(folder, id) {
+            if (confirm("Kya aap waqai ise delete karna chahte hain?")) {
+                db.ref(folder + '/' + id).remove();
+            }
+        }
+
+        function editReview(id) {
+            var newText = prompt("Naya review text likhein:");
+            if (newText !== null && newText.trim()) {
+                db.ref('reviews/' + id).update({ comment: newText.trim() });
+            }
+        }
+
+        db.ref('partners').on('value', function(snap) {
+            allPartnersData = snap.val() || {};
+            var tbody = document.getElementById('adminPartnersList');
+            tbody.innerHTML = "";
+            Object.keys(allPartnersData).forEach(function(id) {
+                var p = allPartnersData[id];
+                tbody.innerHTML += '<tr>' +
+                    '<td>' + p.ownerName + '</td>' +
+                    '<td><strong>' + p.djName + '</strong></td>' +
+                    '<td>' + p.city + '</td>' +
+                    '<td><a href="tel:' + p.phone + '" style="color:#00f3ff;">' + p.phone + '</a> <span class="badge-verified">Verified</span></td>' +
+                    '<td>' + p.equipment + '</td>' +
+                    '<td><button type="button" class="btn btn-pink" style="padding:3px 8px; font-size:0.7rem;" onclick="deleteItem(\'partners\',\'' + id + '\')">Remove</button></td>' +
+                    '</tr>';
+            });
+            renderAdminBookingsTable();
+        });
+
+        db.ref('bookings').on('value', function(snap) {
+            allBookingsData = snap.val() || {};
+            renderAdminBookingsTable();
+            renderYearlyCalendar();
+        });
+
+        function renderAdminBookingsTable() {
+            var tbody = document.getElementById('adminBookingsList');
+            if (!tbody) return;
+            tbody.innerHTML = "";
+            var partnerOptions = '<option value="">-- Partner Chunein --</option>';
+            Object.keys(allPartnersData).forEach(function(pid) {
+                var p = allPartnersData[pid];
+                partnerOptions += '<option value="' + p.phone + '">' + p.djName + ' (' + p.city + ')</option>';
+            });
+
+            Object.keys(allBookingsData).forEach(function(id) {
+                var b = allBookingsData[id];
+                tbody.innerHTML += '<tr>' +
+                    '<td>' + b.name + '</td>' +
+                    '<td><a href="tel:' + b.phone + '" style="color:#00f3ff;">' + b.phone + '</a> <span class="badge-verified">OTP Verified</span></td>' +
+                    '<td>' + b.package + '</td>' +
+                    '<td>' + b.date + '<br><small>' + b.startTime + ' se ' + b.endTime + '</small></td>' +
+                    '<td>' + b.address + '</td>' +
+                    '<td>' +
+                    '<select id="transSel_' + id + '" class="form-control" style="padding:4px; font-size:0.75rem; margin-bottom:4px;">' + partnerOptions + '</select>' +
+                    '<div style="display:flex; gap:4px;">' +
+                    '<button type="button" class="btn btn-green" style="padding:3px 8px; font-size:0.7rem;" onclick="transferBookingWhatsApp(\'' + id + '\')"><i class="fab fa-whatsapp"></i> Transfer</button>' +
+                    '<button type="button" class="btn btn-pink" style="padding:3px 8px; font-size:0.7rem;" onclick="deleteItem(\'bookings\',\'' + id + '\')">Delete</button>' +
+                    '</div></td></tr>';
+            });
+        }
+
+        function transferBookingWhatsApp(bookingId) {
+            var sel = document.getElementById('transSel_' + bookingId);
+            if (!sel || !sel.value) return alert("Pehle list mein se kisi DJ Partner ko chunein jise booking transfer karni hai.");
+            var partnerPhone = sel.value.replace('+', '');
+            var b = allBookingsData[bookingId];
+            var msg = "Namaste! *Fouji DJ Events Ratangarh* ki taraf se aapko ek *Extra DJ Booking* transfer ki ja rahi hai:\n\n" +
+                "*Package:* " + b.package + "\n" +
+                "*Date:* " + b.date + "\n" +
+                "*Time:* " + b.startTime + " se " + b.endTime + "\n" +
+                "*Customer Name:* " + b.name + "\n" +
+                "*Customer Mobile:* " + b.phone + "\n" +
+                "*Event Address:* " + b.address + "\n\nKripya jaldi confirm karein.";
+                        window.open("https://wa.me/" + partnerPhone + "?text=" + encodeURIComponent(msg), "_blank");
+
+        }
+
+        function renderYearlyCalendar() {
+            var grid = document.getElementById('calendarGrid');
+            if (!grid) return;
+            var year = parseInt(document.getElementById('calYear').value, 10);
+            var month = parseInt(document.getElementById('calMonth').value, 10);
+
+            var dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            var html = dayNames.map(function(d) { return '<div class="cal-day-name">' + d + '</div>'; }).join('');
+
+            var firstDay = new Date(year, month, 1).getDay();
+            var daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (var i = 0; i < firstDay; i++) {
+                html += '<div></div>';
+            }
+
+            for (var day = 1; day <= daysInMonth; day++) {
+                var mStr = (month + 1) < 10 ? '0' + (month + 1) : '' + (month + 1);
+                var dStr = day < 10 ? '0' + day : '' + day;
+                var fullDate = year + '-' + mStr + '-' + dStr;
+
+                var dayBookings = Object.values(allBookingsData).filter(function(b) { return b.date === fullDate; });
+                var hasClass = dayBookings.length > 0 ? 'has-booking' : '';
+                var countBadge = dayBookings.length > 0 ? '<small style="font-size:0.65rem;">(' + dayBookings.length + ' Book)</small>' : '';
+
+                html += '<div class="cal-cell ' + hasClass + '" onclick="showCalendarDateDetails(\'' + fullDate + '\')">' + day + countBadge + '</div>';
+            }
+            grid.innerHTML = html;
+        }
+
+        function showCalendarDateDetails(dateStr) {
+            var box = document.getElementById('calendarDayDetails');
+            var dayBookings = Object.values(allBookingsData).filter(function(b) { return b.date === dateStr; });
+            box.style.display = 'block';
+            if (dayBookings.length === 0) {
+                box.innerHTML = '<strong style="color:var(--neon-blue);">' + dateStr + ':</strong> Is tarikh ko abhi koi booking nahi hai.';
+                return;
+            }
+            var html = '<h4 style="color:var(--neon-gold); margin-bottom:8px;">Date ' + dateStr + ' ki Bookings (' + dayBookings.length + '):</h4>';
+            dayBookings.forEach(function(b) {
+                html += '<div style="border-bottom:1px solid #3c2a6e; padding:6px 0; font-size:0.85rem;">' +
+                    '<strong>' + b.name + '</strong> (' + b.phone + ') — <span style="color:var(--neon-pink);">' + b.package + '</span><br>' +
+                    'Time: ' + b.startTime + ' se ' + b.endTime + ' | Address: ' + b.address + '</div>';
+            });
+            box.innerHTML = html;
+        }
+
+        function adminUpdateLogo() {
+            var file = document.getElementById('adminLogoFile').files.item(0);
+            if (!file) return alert("Logo photo chunein.");
+            var fRef = storage.ref('branding/logo_' + Date.now());
+            fRef.put(file).then(function() { return fRef.getDownloadURL(); })
+                .then(function(url) { return db.ref('siteSettings').update({ logoUrl: url }); })
+                .then(function() { alert("Logo update ho gaya!"); })
+                .catch(function(err) { alert("Error: " + err.message); });
+        }
+
+        function adminAddCoverSlide() {
+            var title = document.getElementById('adminSlideTitle').value.trim() || "Fouji DJ Events Ratangarh";
+            var file = document.getElementById('adminCoverFile').files.item(0);
+            if (!file) return alert("Cover photo chunein.");
+            var fRef = storage.ref('branding/cover_' + Date.now());
+            fRef.put(file).then(function() { return fRef.getDownloadURL(); })
+                .then(function(url) { return db.ref('siteSettings/coverSlides').push({ title: title, img: url }); })
+                .then(function() { alert("Nayi Cover Photo slider mein jud gayi!"); })
+                .catch(function(err) { alert("Error: " + err.message); });
+        }
+
+        function renderAdminSlides(slidesObj) {
+            var list = document.getElementById('adminSlidesList');
+            list.innerHTML = "<strong>Active Cover Photos:</strong><br>";
+            Object.keys(slidesObj).forEach(function(id) {
+                var s = slidesObj[id];
+                list.innerHTML += '<div style="display:flex; justify-content:space-between; margin-top:5px;"><span>' + s.title + '</span> <button type="button" style="color:red; background:none; border:none; cursor:pointer;" onclick="deleteItem(\'siteSettings/coverSlides\',\'' + id + '\')">[Remove]</button></div>';
+            });
+        }
+
+        function adminDirectUpload() {
+            var caption = document.getElementById('adminDirectCaption').value.trim();
+            var file = document.getElementById('adminDirectFile').files.item(0);
+            if (!file) return alert("Photo ya video chunein.");
+            var fRef = storage.ref('gallery/' + Date.now() + '_' + file.name);
+            fRef.put(file).then(function() { return fRef.getDownloadURL(); })
+                .then(function(url) {
+                    return db.ref('gallery').push({
+                        name: "Fouji DJ Official",
+                        url: url,
+                        caption: caption,
+                        type: file.type.startsWith('video') ? 'video' : 'image',
+                        approved: true,
+                        timestamp: Date.now()
+                    });
+                })
+                .then(function() { alert("Photo/Video seedhe gallery mein publish ho gayi!"); })
+                .catch(function(err) { alert("Error: " + err.message); });
+        }
+
+        function addOperator() {
+            var name = document.getElementById('opNewName').value.trim();
+            var phone = document.getElementById('opNewPhone').value.trim();
+            var role = document.getElementById('opNewRole').value.trim() || "DJ Operator";
+            if (!name || !phone) return alert("Naam aur number bharein.");
+            db.ref('operatorsList').push({ name: name, phone: phone, role: role })
+                .then(function() {
+                    document.getElementById('opNewName').value = "";
+                    document.getElementById('opNewPhone').value = "";
+                });
+        }
+
+        db.ref('operatorsList').on('value', function(snap) {
+            var tbody = document.getElementById('adminOperatorsList');
+            tbody.innerHTML = "";
+            var data = snap.val();
+            if (!data) return;
+            Object.keys(data).forEach(function(id) {
+                var op = data[id];
+                tbody.innerHTML += '<tr><td>' + op.name + '</td><td>' + op.phone + '</td><td>' + op.role + '</td><td><button type="button" class="btn btn-pink" style="padding:3px 8px; font-size:0.7rem;" onclick="deleteItem(\'operatorsList\',\'' + id + '\')">Remove</button></td></tr>';
+            });
+        });
+
+        function updateWelcomeBanner() {
+            var msg = document.getElementById('adminBannerInput').value.trim();
+            if (!msg) return alert("Sandesh likhein.");
+            db.ref('siteSettings').update({ welcomeBanner: msg })
+                .then(function() { alert("Badhai sandesh update ho gaya!"); });
+        }
+    </script>
+<script>
+    document.querySelectorAll('input[type="password"]').forEach(function(passInput) {
+        var wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        wrapper.style.width = '100%';
+        passInput.parentNode.insertBefore(wrapper, passInput);
+        wrapper.appendChild(passInput);
+        passInput.style.paddingRight = '40px';
+
+        var toggleBtn = document.createElement('span');
+        toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+        toggleBtn.style.position = 'absolute';
+        toggleBtn.style.right = '12px';
+        toggleBtn.style.top = '50%';
+        toggleBtn.style.transform = 'translateY(-50%)';
+        toggleBtn.style.cursor = 'pointer';
+        toggleBtn.style.color = '#00f3ff';
+        toggleBtn.title = 'Show / Hide Password';
+
+        toggleBtn.onclick = function() {
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                passInput.type = 'password';
+                toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        };
+        wrapper.appendChild(toggleBtn);
+    });
+</script>
+</body>
+</html>
