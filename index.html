@@ -4002,5 +4002,62 @@ playlist: (document.getElementById('remSongCategory') ? document.getElementById(
     };
 })();
 </script>
+    <script>
+(function() {
+    // 1. Booking फॉर्म से OTP बॉक्स पूरी तरह हटाना
+    var bookOtp = document.getElementById('bookOtpGroup');
+    if (bookOtp) bookOtp.remove();
+    var bookPhone = document.getElementById('bookPhone');
+    if (bookPhone && bookPhone.nextElementSibling && bookPhone.nextElementSibling.tagName === 'BUTTON') {
+        bookPhone.nextElementSibling.remove();
+    }
+
+    // 2. DJ Remixer नया अकाउंट बनाने से OTP हटाना (सीधे मोबाइल नंबर और पासवर्ड से अकाउंट बनेगा)
+    var remOtp = document.getElementById('remixerOtpGroup');
+    if (remOtp) remOtp.remove();
+    var remBadge = document.getElementById('remixerVerifiedBadge');
+    if (remBadge) remBadge.remove();
+    var remPhone = document.getElementById('remRegPhone');
+    if (remPhone) {
+        remPhone.placeholder = "सही 10 अंकों का मोबाइल नंबर (जैसे: 9876543210)";
+        remPhone.maxLength = 10;
+        if (remPhone.nextElementSibling && remPhone.nextElementSibling.tagName === 'BUTTON') {
+            remPhone.nextElementSibling.remove();
+        }
+    }
+
+    window.registerRemixer = function() {
+        var name = document.getElementById('remRegName').value.trim();
+        var rawPhone = document.getElementById('remRegPhone').value.trim().replace(/\D/g, "");
+        if (rawPhone.length === 12 && rawPhone.startsWith("91")) rawPhone = rawPhone.slice(2);
+        var pass = document.getElementById('remRegPass').value.trim();
+
+        if (!name || pass.length < 4) return alert("कृपया DJ नाम और कम से कम 4 अक्षर का पासवर्ड डालें।");
+        if (!/^[6-9]\d{9}$/.test(rawPhone)) return alert("कृपया सही 10 अंकों का मोबाइल नंबर दर्ज करें।");
+
+        var fullPhone = "+91" + rawPhone;
+        var cleanKey = "91" + rawPhone;
+
+        db.ref('remixersAccount/' + cleanKey).set({
+            name: name,
+            phone: fullPhone,
+            password: pass
+        }).then(function() {
+            currentRemixer = { name: name, phone: fullPhone, key: cleanKey };
+            showRemixerDashboard();
+            alert("बधाई हो! बिना OTP आपका DJ Remixer Account बन गया है।");
+        }).catch(function(err) { alert("Error: " + err.message); });
+    };
+
+    // 3. Admin Login से Mobile OTP वाला बटन और बॉक्स हटाना (केवल Password और Gmail Link रहेगा)
+    var adminOtpArea = document.getElementById('adminForgotOtpArea');
+    if (adminOtpArea) adminOtpArea.remove();
+    document.querySelectorAll('#adminLoginModal button').forEach(function(btn) {
+        if (btn.innerText.indexOf('OTP') !== -1 || (btn.getAttribute('onclick') || '').indexOf('OTP') !== -1) {
+            btn.remove();
+        }
+    });
+})();
+</script>
 </body>
 </html>
