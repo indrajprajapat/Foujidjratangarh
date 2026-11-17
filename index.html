@@ -4059,5 +4059,183 @@ playlist: (document.getElementById('remSongCategory') ? document.getElementById(
     });
 })();
 </script>
+    <style>
+    /* तारीख (Calendar) और समय (Clock) के इनपुट पर क्लिक करते ही पूरा कैलेंडर और घड़ी खुले */
+    input[type="date"], input[type="time"] {
+        position: relative;
+        color-scheme: dark;
+        cursor: pointer;
+        font-weight: 600;
+        border: 1px solid #00f3ff !important;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="time"]::-webkit-calendar-picker-indicator {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+    .bk-filter-bar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+    }
+    .bk-filter-btn {
+        padding: 8px 16px;
+        border-radius: 25px;
+        border: 1px solid rgba(0, 243, 255, 0.4);
+        background: #1c103b;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+    .bk-filter-btn.active {
+        background: linear-gradient(45deg, #ff007f, #ff5e00);
+        border-color: #ffd700;
+    }
+</style>
+
+<script>
+(function() {
+    // 1. जहां भी Date और Time बॉक्स है, क्लिक करते ही कैलेंडर और घड़ी (Clock) खुले
+    function enhanceDateTimeInputs() {
+        var today = new Date().toISOString().split('T')[0];
+        document.querySelectorAll('input[type="date"], input[type="time"]').forEach(function(inp) {
+            if (inp.type === 'date') inp.min = today;
+            inp.addEventListener('click', function() {
+                if (typeof this.showPicker === 'function') {
+                    try { this.showPicker(); } catch (e) {}
+                }
+            });
+        });
+    }
+    enhanceDateTimeInputs();
+
+    // 2. Admin Bookings में अलग-अलग टैब: Total, Pending, Confirmed, Self (खुद निकालेंगे), Transferred (किसी को दी)
+    var currentBkTab = 'ALL';
+    var tabBookings = document.getElementById('tabBookings');
+    if (tabBookings && !document.getElementById('bkSeparateFilterBar')) {
+        var bar = document.createElement('div');
+        bar.id = 'bkSeparateFilterBar';
+        bar.className = 'bk-filter-bar';
+        bar.innerHTML =
+            '<button type="button" class="bk-filter-btn active" onclick="setBookingListFilter(\'ALL\', this)">📊 Total Bookings (<span id="cntBkTotal">0</span>)</button>' +
+            '<button type="button" class="bk-filter-btn" onclick="setBookingListFilter(\'Pending\', this)">⏳ Pending (<span id="cntBkPending">0</span>)</button>' +
+            '<button type="button" class="bk-filter-btn" onclick="setBookingListFilter(\'Confirmed\', this)">✅ Confirmed (<span id="cntBkConfirmed">0</span>)</button>' +
+            '<button type="button" class="bk-filter-btn" onclick="setBookingListFilter(\'Self\', this)">👑 खुद निकालेंगे (Self) (<span id="cntBkSelf">0</span>)</button>' +
+            '<button type="button" class="bk-filter-btn" onclick="setBookingListFilter(\'Transferred\', this)">🤝 किसी को Transfer की (<span id="cntBkTrans">0</span>)</button>';
+        var tableWrap = tabBookings.querySelector('div');
+        tabBookings.insertBefore(bar, tableWrap);
+    }
+
+    window.setBookingListFilter = function(filterType, btn) {
+        currentBkTab = filterType;
+        document.querySelectorAll('.bk-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+        if (btn) btn.classList.add('active');
+        renderAdminBookingsTable();
+    };
+
+    window.updateBookingStatusAction = function(id, newStatus, assignedToName) {
+        var upd = { status: newStatus };
+        if (assignedToName !== undefined) upd.assignedTo = assignedToName;
+        db.ref('bookings/' + id).update(upd);
+    };
+
+    // 3. Separate Lists & Clear Action Buttons for Admin
+    window.renderAdminBookingsTable = function() {
+        var tbody = document.getElementById('adminBookingsList');
+        if (!tbody) return;
+
+        var keys = Object.keys(allBookingsData || {}).reverse();
+        var total = keys.length, pending = 0, confirmed = 0, selfCnt = 0, transCnt = 0;
+
+        keys.forEach(function(id) {
+            var b = allBookingsData[id];
+            var st = b.status || 'Pending';
+            var mode = b.workMode || '';
+            if (st === 'Pending') pending++;
+            if (st === 'Confirmed') confirmed++;
+            if (mode === 'Self') selfCnt++;
+            if (mode === 'Transferred') transCnt++;
+        });
+
+        if (document.getElementById('cntBkTotal')) document.getElementById('cntBkTotal').innerText = total;
+        if (document.getElementById('cntBkPending')) document.getElementById('cntBkPending').innerText = pending;
+        if (document.getElementById('cntBkConfirmed')) document.getElementById('cntBkConfirmed').innerText = confirmed;
+        if (document.getElementById('cntBkSelf')) document.getElementById('cntBkSelf').innerText = selfCnt;
+        if (document.getElementById('cntBkTrans')) document.getElementById('cntBkTrans').innerText = transCnt;
+
+        var partnerOptions = '<option value="">-- Partner को Transfer करें --</option>';
+        Object.keys(allPartnersData || {}).forEach(function(pid) {
+            var p = allPartnersData[pid];
+            partnerOptions += '<option value="' + p.phone + '|' + p.djName + '">' + p.djName + ' (' + p.city + ')</option>';
+        });
+
+        tbody.innerHTML = "";
+        var shownCount = 0;
+
+        keys.forEach(function(id) {
+            var b = allBookingsData[id];
+            var st = b.status || 'Pending';
+            var mode = b.workMode || 'Unassigned';
+
+            // Filter check
+            if (currentBkTab === 'Pending' && st !== 'Pending') return;
+            if (currentBkTab === 'Confirmed' && st !== 'Confirmed') return;
+            if (currentBkTab === 'Self' && mode !== 'Self') return;
+            if (currentBkTab === 'Transferred' && mode !== 'Transferred') return;
+            shownCount++;
+
+            var cleanCustWa = String(b.phone || "").replace(/\D/g, "");
+            var replyMsg = "🎉 *Welcome to Fouji DJ Events Ratangarh!* 🎉\n" +
+                "नमस्ते *" + b.name + "*, आपकी *" + b.package + "* की बुकिंग (तारीख: *" + b.date + "*, समय: *" + b.startTime + " से " + b.endTime + "*) Confirm हो गई है।\n\n" +
+                "📞 *Contact For More Details:* 7023370739, 9119276526, 9001181847, 7725930617";
+
+            var statusBadge = st === 'Confirmed'
+                ? '<span class="badge-verified">✅ Confirmed</span>'
+                : '<span class="badge-pending">⏳ Pending</span>';
+
+            var modeBadge = mode === 'Self'
+                ? '<br><span style="background:#7c3aed; color:#fff; padding:2px 7px; border-radius:8px; font-size:0.7rem; display:inline-block; margin-top:4px;">👑 खुद निकालेंगे (Self)</span>'
+                : (mode === 'Transferred'
+                    ? '<br><span style="background:#0284c7; color:#fff; padding:2px 7px; border-radius:8px; font-size:0.7rem; display:inline-block; margin-top:4px;">🤝 Transfer: ' + (b.assignedTo || 'Partner') + '</span>'
+                    : '');
+
+            var photoThumb = b.selectedPhoto
+                ? '<br><img src="' + b.selectedPhoto + '" style="width:55px; height:40px; object-fit:cover; border-radius:5px; margin-top:4px; cursor:pointer;" onclick="openSmartViewer([{url:\'' + b.selectedPhoto + '\',type:\'image\',title:\'Selected Setup\'}],0)">'
+                : '';
+
+            tbody.innerHTML += '<tr>' +
+                '<td><strong>' + b.name + '</strong><br><a href="tel:' + b.phone + '" style="color:#00f3ff;">' + b.phone + '</a>' +
+                '<br><a href="https://wa.me' + cleanCustWa + '?text=' + encodeURIComponent(replyMsg) + '" target="_blank" class="btn btn-green" style="padding:3px 8px; font-size:0.7rem; margin-top:4px;"><i class="fab fa-whatsapp"></i> ग्राहक WhatsApp</a></td>' +
+                '<td><strong>' + b.package + '</strong>' + photoThumb + '</td>' +
+                '<td>' + b.date + '<br><small>' + b.startTime + ' से ' + b.endTime + '</small></td>' +
+                '<td>' + b.address + '</td>' +
+                '<td>' + statusBadge + modeBadge + '</td>' +
+                '<td style="min-width:190px;">' +
+                '<div style="display:flex; gap:4px; flex-wrap:wrap; margin-bottom:6px;">' +
+                '<button type="button" class="btn btn-green" style="padding:4px 8px; font-size:0.72rem;" onclick="updateBookingStatusAction(\'' + id + '\', \'Confirmed\')">✅ Confirm</button>' +
+                '<button type="button" class="btn btn-gold" style="padding:4px 8px; font-size:0.72rem;" onclick="updateBookingStatusAction(\'' + id + '\', \'Pending\')">⏳ Pending</button>' +
+                '<button type="button" class="btn btn-blue" style="padding:4px 8px; font-size:0.72rem;" onclick="db.ref(\'bookings/' + id + '\').update({status:\'Confirmed\', workMode:\'Self\', assignedTo:\'Fouji DJ Self\'})">👑 खुद निकालेंगे</button>' +
+                '</div>' +
+                '<div style="display:flex; gap:4px; margin-bottom:5px;">' +
+                '<select id="transSel_' + id + '" class="form-control" style="padding:4px; font-size:0.72rem;">' + partnerOptions + '</select>' +
+                '<button type="button" class="btn btn-pink" style="padding:4px 8px; font-size:0.72rem;" onclick="transferBookingSeparate(\'' + id + '\')">Transfer</button>' +
+                '</div>' +
+                '<button type="button" class="btn btn-pink" style="padding:3px 8px; font-size:0.7rem; width:100%; justify-content:center; opacity:0.85;" onclick="deleteItem(\'bookings\',\'' + id + '\')">🗑️ Delete</button>' +
+                '</td></tr>';
+        });
+
+        if (!shownCount) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#aaa; padding:15px;">इस लिस्ट में अभी कोई बुकिंग नहीं है।</td></tr>';
+        }
+    };
+
+    window.transferBookingSeparate = function(bookingId) {
+        var sel = document.getElementById('transSel_' + bookingId);
 </body>
 </html>
